@@ -146,7 +146,7 @@ async function getBratVideo(text, format = "mp4") {
 
   // ============= ENDPOINT: BRAT VIDEO (MP4) =============
 
-  app.get("/api/maker/bratvid", createApiKeyMiddleware(), async (req, res) => {
+  app.get("/maker/bratvid", createApiKeyMiddleware(), async (req, res) => {
     try {
       const text = req.query.text || req.body?.text;
 
