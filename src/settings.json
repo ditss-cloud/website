@@ -1,5 +1,5 @@
 {
-  "name": "Raol Api'S",
+  "name": "Asuma Api'S",
   "version": "v7.1.0",
   "description": "Simple and easy to use API documentation.",
   "maintenance": {
@@ -23,7 +23,7 @@
         "rateLimit": "unlimited",
         "enabled": true
       },
-      "Raol": {
+      "ditss": {
         "rateLimit": "unlimited",
         "enabled": true,
         "category": "premium",
