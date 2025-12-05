@@ -1595,8 +1595,8 @@ a:hover {
 }
 
 .dark-mode .status-ready {
-  background-color: rgba(139, 0, 0, 0.2);
-  color: #8b0000 !important;
+  background-color: rgba(6, 182, 212, 0.2);
+  color: #06B6D4 !important;
 }
 
 .status-error {
