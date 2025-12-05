@@ -12,8 +12,8 @@
     "status": "Online"
   },
   "apiSettings": {
-    "creator": "RaolByte",
-    "requireApikey": false,
+    "creator": "DitssCloud",
+    "requireApikey": true,
     "apikey": {
       "demo": {
         "rateLimit": "5000/day",
@@ -27,7 +27,7 @@
         "rateLimit": "unlimited",
         "enabled": true,
         "category": "premium",
-        "name": "Raol"
+        "name": "ditss"
       }
     }
   },
