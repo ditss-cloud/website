@@ -1,18 +1,18 @@
 {
-  "enabled": true,
+  "enabled": false,
   "title": "Sponsored Ads",
   "subtitle": "Support these amazing services ❤",
-  "showOnLoad": true,
+  "showOnLoad": false,
   "showInterval": 300000,
   "sponsors": [
     {
       "id": "vgxteam",
-      "name": "RaolByte",
+      "name": "DitssCloud",
       "logo": "",
       "backgroundColor": "#1a1a1a",
       "textColor": "#ffffff",
       "bannerImage": "/src/images/banner.jpg",
-      "url": "https://whatsapp.com/channel/0029Vb6n9HIDJ6H6oibRvv1D",
+      "url": "https://whatsapp.com/channel/0029VaimJO0E50UaXv9Z1J0L",
       "active": true
     }
   ]
