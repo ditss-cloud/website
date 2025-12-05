@@ -3,7 +3,7 @@
   "version": "v7.1.0",
   "description": "Simple and easy to use API documentation.",
   "maintenance": {
-    "enabled": false,
+    "enabled": true,
     "message": ""
   },
   "bannerImage": "/src/images/banner.jpg",
