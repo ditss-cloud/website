@@ -3,7 +3,7 @@
   "version": "v7.1.0",
   "description": "Simple and easy to use API documentation.",
   "maintenance": {
-    "enabled": true,
+    "enabled": false,
     "message": "sedang add fitur yang berguna dan mengoptimalkan respon nya."
   },
   "bannerImage": "/src/images/banner.jpg",
