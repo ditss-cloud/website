@@ -1,65 +1,68 @@
 import axios from "axios";
 import { createApiKeyMiddleware } from "../../middleware/apikey.js";
 
+// Helper: ambil buffer dari URL
+async function getBuffer(url) {
+  const response = await axios.get(url, { responseType: "arraybuffer" });
+  return Buffer.from(response.data);
+}
+
 export default (app) => {
-  async function handleHitamkan(req, res) {
+  async function handleHitamkanV2(req, res) {
     const { url, filter } = req.query;
 
     if (!url) {
       return res.status(400).json({
         status: false,
-        creator: "DitssGanteng",
-        error: "Parameter url tidak ditemukan",
+        message: "Parameter url tidak ditemukan",
       });
     }
 
     try {
-      const imgRes = await axios.get(url, { responseType: "arraybuffer" });
-      const base64Input = Buffer.from(imgRes.data).toString("base64");
+      // Ambil gambar sebagai buffer
+      const buffer = await getBuffer(url);
 
+      // Kirim ke API negro.consulting
       const result = await axios.post(
-        "https://wpw.my.id/api/process-image",
-        {
-          imageData: base64Input,
-          filter: (filter || "hitam").toLowerCase(),
-        },
+        "https://negro.consulting/api/process-image",
+        JSON.stringify({
+          imageData: Buffer.from(buffer).toString("base64"),
+          filter: filter || "coklat",
+        }),
         {
           headers: {
             "Content-Type": "application/json",
-            Origin: "https://wpw.my.id",
-            Referer: "https://wpw.my.id/",
           },
-          timeout: 90000,
+          timeout: 60000,
         }
       );
 
-      const dataUrl = result.data?.processedImageUrl;
-      if (!dataUrl || !dataUrl.startsWith("data:image/")) {
+      if (result.data?.status === "success") {
+        const base64Image = result.data.processedImageUrl.split(",")[1];
+        const finalBuffer = Buffer.from(base64Image, "base64");
+
+        res.writeHead(200, {
+          "Content-Type": "image/png",
+          "Content-Length": finalBuffer.length,
+        });
+        res.end(finalBuffer);
+      } else {
         return res.status(500).json({
           status: false,
-          creator: "DitssGanteng",
-          error: "Gagal memproses gambar (data kosong)",
+          message: "Gagal memproses gambar",
         });
       }
-
-      const base64Output = dataUrl.split(",")[1];
-      const finalBuffer = Buffer.from(base64Output, "base64");
-
-      res.writeHead(200, {
-        "Content-Type": "image/png",
-        "Content-Length": finalBuffer.length,
-      });
-      res.end(finalBuffer);
     } catch (err) {
-      console.error("[Hitamkan Error]:", err?.response?.data || err.message);
+      console.error("[Hitamkan V2 Error]:", err?.response?.data || err.message);
       res.status(500).json({
         status: false,
-        creator: "DitssGanteng",
+        message: "Terjadi kesalahan saat memproses gambar",
         error: err?.response?.data || err.message,
       });
     }
   }
 
-  app.get("/v2/maker/hitamkan", createApiKeyMiddleware(), handleHitamkan);
-  app.post("/v2/maker/hitamkan", createApiKeyMiddleware(), handleHitamkan);
+  // Daftarkan endpoint
+  app.get("/api/maker/hitamkan-v2", createApiKeyMiddleware(), handleHitamkanV2);
+  app.post("/api/maker/hitamkan-v2", createApiKeyMiddleware(), handleHitamkanV2);
 };
