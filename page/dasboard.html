@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Live Dashboard</title>
+    <script>
+        async function loadDashboard() {
+            const response = await fetch('/admin/stats/dashboard');
+            const data = await response.json();
+            
+            document.getElementById('totalRequests').textContent = data.dashboard.overview.totalRequests;
+            document.getElementById('errorRate').textContent = data.dashboard.overview.failedRequests;
+            document.getElementById('avgResponse').textContent = data.dashboard.overview.avgResponseTime;
+            document.getElementById('successRate').textContent = data.dashboard.overview.successRate;
+            
+            // Auto-refresh setiap 30 detik
+            setTimeout(loadDashboard, 30000);
+        }
+        
+        // Koneksi ke real-time stream
+        const eventSource = new EventSource('/admin/stats/stream');
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            document.getElementById('latestRequest').textContent = 
+                data.latestRequest ? `${data.latestRequest.endpoint} - ${data.latestRequest.status}` : 'No recent requests';
+            document.getElementById('requests5min').textContent = data.activityLast5Min.total;
+        };
+        
+        window.onload = loadDashboard;
+    </script>
+</head>
+<body>
+    <h1>📊 API Live Dashboard</h1>
+    <div>
+        <h3>Total Requests Today: <span id="totalRequests">0</span></h3>
+        <h3>Errors Today: <span id="errorRate">0</span></h3>
+        <h3>Avg Response: <span id="avgResponse">0ms</span></h3>
+        <h3>Success Rate: <span id="successRate">0%</span></h3>
+        <hr>
+        <h3>Latest Request: <span id="latestRequest">Loading...</span></h3>
+        <h3>Requests (last 5 min): <span id="requests5min">0</span></h3>
+    </div>
+</body>
+</html>
