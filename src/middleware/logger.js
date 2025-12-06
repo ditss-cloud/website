@@ -144,7 +144,7 @@ export function createLogger() {
       /^\/random\//,        // /random/*
       /^\/maker\//,         // /maker/*
       /^\/v[1-5]\//,        // /v1/, /v2/, /v3/, /v4/, /v5/
-      /^\/admin\//          // /admin/*
+      /^\/admiin\//          // /admin/*
     ];
     
     const isApiRequest = apiPatterns.some(pattern => pattern.test(req.path));
