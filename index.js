@@ -6,6 +6,7 @@ import path from "path"
 import { fileURLToPath, pathToFileURL } from "url"
 import { createRequire } from "module"
 import dotenv from "dotenv"
+import { WebSocketServer } from "ws";
 import { startDiscordBot, updateStats } from "./src/discord.js"
 import { connectDB } from './src/database/db.js'
 import { createLogger } from './src/middleware/logger.js'
@@ -277,6 +278,45 @@ app.get("/", (req, res) => {
 app.get("/atmin/dasboard", (req, res) => {
   res.sendFile(path.join(__dirname, "page", "dasboard.html"))
 })
+
+app.get("/assets/dashboard.css", (req, res) => {
+    res.type("text/css");
+    res.sendFile(path.join(__dirname, "page", "dashboard.css"));
+});
+
+app.get("/assets/dashboard.js", (req, res) => {
+    res.type("application/javascript");
+    res.sendFile(path.join(__dirname, "page", "dashboard.js"));
+});
+
+const wss = new WebSocketServer({ noServer: true });
+wss.on("connection", (ws) => {
+    const sendStats = () => {
+        ws.send(
+            JSON.stringify({
+                type: "stats",
+                data: {
+                    totalRequests: Math.floor(Math.random() * 1000) + 500,
+                    requestsLast5Min: Math.floor(Math.random() * 50) + 10,
+                    timestamp: new Date().toISOString()
+                }
+            })
+        );
+    };
+    const interval = setInterval(sendStats, 5000);
+    ws.on("close", () => clearInterval(interval));
+});
+const server = app.listen(PORT);
+
+server.on("upgrade", (req, socket, head) => {
+    if (req.url === "/admin/stats/ws") {
+        wss.handleUpgrade(req, socket, head, (ws) => {
+            wss.emit("connection", ws, req);
+        });
+    } else {
+        socket.destroy();
+    }
+});
 
 app.get("/docs", (req, res) => {
   res.sendFile(path.join(__dirname, "page", "docs", "index.html"))
