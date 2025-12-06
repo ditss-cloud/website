@@ -1,5 +1,6 @@
-import { ApiLog, UsageStats } from '../database/models/ApiLog.js';
-
+//import { ApiLog, UsageStats } from '../database/models/ApiLog.js';
+import { ApiLog } from '../database/models/ApiLog.js';
+import { UsageStats } from '../database/models/UsageStats.js';
 export function createLogger() {
   return async (req, res, next) => {
     req.startTime = Date.now();
