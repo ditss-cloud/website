@@ -46,6 +46,7 @@
     "multiparty": "^4.2.2",
     "node-fetch": "^2.6.1",
     "node-upload-images": "^1.0.1",
+    "node-cache": "5.1.2",
     "nodemon": "^3.1.7",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
