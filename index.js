@@ -280,12 +280,12 @@ app.get("/atmin/dasboard", (req, res) => {
 })
 
 app.get("/assets/dashboard.css", (req, res) => {
-    res.type("text/css");
+    //res.type("text/css"); 
     res.sendFile(path.join(__dirname, "page", "dashboard.css"));
 });
 
 app.get("/assets/dashboard.js", (req, res) => {
-    res.type("application/javascript");
+    //res.type("application/javascript");
     res.sendFile(path.join(__dirname, "page", "dashboard.js"));
 });
 
