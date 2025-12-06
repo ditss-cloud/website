@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 // PASTIKAN USERNAME BENAR: dftsscloud_db_user (dengan F)
-const MONGODB_URI = "mongodb+srv://ditsscloud_db_user:ZIUOFpmNOqWShQVC@asuma-cluster.pmod26g.mongodb.net/asuma-api?retryWrites=true&w=majority&appName=Asuma-Cluster";
+const MONGODB_URI = "mongodb+srv://ditsscloud_db_user:qVh3IaSTcvbx8XVu@asuma-cluster.pmod26g.mongodb.net/asuma-api?retryWrites=true&w=majority&appName=Asuma-Cluster";
 
 if (!MONGODB_URI) {
   throw new Error('Please define MONGODB_URI environment variable');
