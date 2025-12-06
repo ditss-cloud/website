@@ -7,7 +7,8 @@ import { fileURLToPath, pathToFileURL } from "url"
 import { createRequire } from "module"
 import dotenv from "dotenv"
 import { startDiscordBot, updateStats } from "./src/discord.js"
-
+import { connectDB } from './src/database/db.js';
+import { createLogger } from './src/middleware/logger.js';
 const nodeVersion = process.versions.node.split(".")[0]
 if (Number.parseInt(nodeVersion) < 20) {
   console.error("\x1b[31m%s\x1b[0m", "╔════════════════════════════════════════════════════════╗")
@@ -32,12 +33,22 @@ const require = createRequire(import.meta.url)
 const app = express()
 let PORT = process.env.PORT || 3000
 
+// Connect db
+connectDB().then(() => {
+  console.log(chalk.green('✅ MongoDB connected successfully'));
+}).catch((error) => {
+  console.error(chalk.red('❌ MongoDB connection failed:'), error);
+  process.exit(1); 
+});
+
 app.enable("trust proxy")
 app.set("json spaces", 2)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cors())
+// Use logger middleware
+app.use(createLogger());
 
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff")
