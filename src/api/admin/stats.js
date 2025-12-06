@@ -1,4 +1,4 @@
-import { ApiLog } from '../../database/models/ApiLog.js';
+/*import { ApiLog } from '../../database/models/ApiLog.js';
 import { UsageStats } from '../../database/models/UsageStats.js';
 import { createApiKeyMiddleware } from '../../middleware/apikey.js';
 
@@ -8,7 +8,22 @@ if (!global.statsCache) {
   global.statsCache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
 }
 cache = global.statsCache;
+*/
+import { ApiLog } from '../../database/models/ApiLog.js';
+import { UsageStats } from '../../database/models/UsageStats.js';
+import { createApiKeyMiddleware } from '../../middleware/apikey.js';
 
+import NodeCache from 'node-cache';
+
+let cache;
+if (!global.statsCache) {
+  global.statsCache = new NodeCache({
+    stdTTL: 60,
+    checkperiod: 120
+  });
+}
+
+cache = global.statsCache;
 function sendResponse(req, res, statusCode, data) {
   const response = {
     status: statusCode === 200 || statusCode === 201,
