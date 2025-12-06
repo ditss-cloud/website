@@ -143,7 +143,7 @@ app.use((req, res, next) => {
   if (isBlocked) return res.status(403).sendFile(path.join(__dirname, "page", "status", "4xx", "403.html"))
   next()
 })
-
+app.use("/pablic", express.static(path.join(__dirname, "pablic")))
 app.use("/src", (req, res, next) => {
   if (req.path.match(/\.(jpg|jpeg|png|gif|svg|ico)$/i)) {
     express.static(path.join(__dirname, "src"))(req, res, next)
