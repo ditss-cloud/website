@@ -89,14 +89,20 @@ const pxpic = {
   },
 }
 
-async function uploadToCDN(imageUrl) {
+async function uploadToCDN(imageUrl, folder = null) {
   try {
-    const apiUrl = `https://cdn.ditss.biz.id/uploadUrl?url=${encodeURIComponent(imageUrl)}`
-    const { data } = await axios.get(apiUrl, { timeout: 60000 })
-    return data.url
+    let apiUrl;
+    if (folder) {
+      apiUrl = `https://cdn.ditss.biz.id/uploadUrl?url=${encodeURIComponent(imageUrl)}&folder=${folder}`;
+    } else {
+      apiUrl = `https://cdn.ditss.biz.id/uploadUrl?url=${encodeURIComponent(imageUrl)}`;
+    }
+    
+    const { data } = await axios.get(apiUrl, { timeout: 60000 });
+    return data.url;
   } catch (error) {
-    console.error('CDN upload failed:', error.message)
-    return imageUrl
+    console.error('CDN upload failed:', error.message);
+    return imageUrl;
   }
 }
 
@@ -160,13 +166,23 @@ export default function (app) {
         }, version)
       }
 
-      const finalUrl = await uploadToCDN(result.resultImageUrl)
+      const folderMap = {
+        'removebg': 'removebg',
+        'enhance': 'enhance', 
+        'upscale': 'upscale',
+        'colorize': 'colorize',
+        'restore': 'restore'
+      };
+      
+      const folder = folderMap[toolName] || 'pxpic';
+      const finalUrl = await uploadToCDN(result.resultImageUrl, folder)
 
       return sendResponse(req, res, 200, {
         result: {
           imageUrl: finalUrl,
           tool: toolName,
-          originalUrl: url
+          originalUrl: url,
+          folder: folder
         }
       }, version)
 
@@ -196,4 +212,4 @@ export default function (app) {
   app.post("/v1/imagecreator/colorize", createApiKeyMiddleware(), (req, res) => handleImageTool(req, res, 'v1', 'colorize'))
   app.get("/v2/imagecreator/colorize", createApiKeyMiddleware(), (req, res) => handleImageTool(req, res, 'v2', 'colorize'))
   app.post("/v2/imagecreator/colorize", createApiKeyMiddleware(), (req, res) => handleImageTool(req, res, 'v2', 'colorize'))
-}
+      }
