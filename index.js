@@ -7,6 +7,8 @@ import { fileURLToPath, pathToFileURL } from "url"
 import { createRequire } from "module"
 import dotenv from "dotenv"
 import { startDiscordBot, updateStats } from "./src/discord.js"
+import { connectDB } from './src/database/db.js'
+import { createLogger } from './src/middleware/logger.js'
 
 const nodeVersion = process.versions.node.split(".")[0]
 if (Number.parseInt(nodeVersion) < 20) {
@@ -394,8 +396,33 @@ const findAvailablePort = (startPort) => {
   })
 }
 
-const startServer = async () => {
+const startApplication = async () => {
   try {
+    console.log(chalk.blue('🔄 Connecting to MongoDB...'))
+    await connectDB()
+    console.log(chalk.green('✅ MongoDB connected successfully'))
+
+    app.use(createLogger())
+    console.log(chalk.green('✅ Logger middleware installed'))
+
+    await loadApiRoutes()
+
+    console.log(chalk.bgHex("#90EE90").hex("#333").bold(" Load Complete! "))
+    console.log(chalk.bgHex("#90EE90").hex("#333").bold(` Total Routes Loaded: ${totalRoutes} `))
+
+    const findAvailablePort = (startPort) => {
+      return new Promise((resolve) => {
+        const server = app
+          .listen(startPort, () => {
+            const port = server.address().port
+            server.close(() => resolve(port))
+          })
+          .on("error", () => {
+            resolve(findAvailablePort(startPort + 1))
+          })
+      })
+    }
+
     PORT = await findAvailablePort(PORT)
 
     const server = app.listen(PORT, () => {
@@ -419,13 +446,13 @@ const startServer = async () => {
     })
 
     startDiscordBot()
-  } catch (err) {
-    console.error(chalk.bgRed.white(` Server failed to start: ${err.message} `))
+  } catch (error) {
+    console.error(chalk.red('❌ Failed to start server:'), error)
     process.exit(1)
   }
 }
 
-startServer()
+startApplication()
 
 export default app
                                    
