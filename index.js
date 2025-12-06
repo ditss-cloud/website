@@ -7,8 +7,6 @@ import { fileURLToPath, pathToFileURL } from "url"
 import { createRequire } from "module"
 import dotenv from "dotenv"
 import { startDiscordBot, updateStats } from "./src/discord.js"
-import { connectDB } from './src/database/db.js'
-import { createLogger } from './src/middleware/logger.js'
 
 const nodeVersion = process.versions.node.split(".")[0]
 if (Number.parseInt(nodeVersion) < 20) {
@@ -286,6 +284,8 @@ const loadApiRoutes = async () => {
   }
 }
 
+await loadApiRoutes()
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "page", "index.html"))
 })
@@ -294,33 +294,108 @@ app.get("/docs", (req, res) => {
   res.sendFile(path.join(__dirname, "page", "docs", "index.html"))
 })
 
-const startApplication = async () => {
-  try {
-    console.log(chalk.blue('🔄 Connecting to MongoDB...'))
-    await connectDB()
-    console.log(chalk.green('✅ MongoDB connected successfully'))
+console.log(chalk.bgHex("#90EE90").hex("#333").bold(" Load Complete! "))
+console.log(chalk.bgHex("#90EE90").hex("#333").bold(` Total Routes Loaded: ${totalRoutes} `))
 
-    app.use(createLogger())
-    console.log(chalk.green('✅ Logger middleware installed'))
+app.use((err, req, res, next) => {
+  console.error(err.stack)
 
-    await loadApiRoutes()
+  if (err.status === 400) {
+    res.status(400).sendFile(path.join(__dirname, "page", "status", "4xx", "400.html"))
+  } else if (err.status === 401) {
+    res.status(401).sendFile(path.join(__dirname, "page", "status", "4xx", "401.html"))
+  } else if (err.status === 402) {
+    res.status(402).sendFile(path.join(__dirname, "page", "status", "4xx", "402.html"))
+  } else if (err.status === 403) {
+    res.status(403).sendFile(path.join(__dirname, "page", "status", "4xx", "403.html"))
+  } else if (err.status === 405) {
+    res.status(405).sendFile(path.join(__dirname, "page", "status", "4xx", "405.html"))
+  } else if (err.status === 406) {
+    res.status(406).sendFile(path.join(__dirname, "page", "status", "4xx", "406.html"))
+  } else if (err.status === 407) {
+    res.status(407).sendFile(path.join(__dirname, "page", "status", "4xx", "407.html"))
+  } else if (err.status === 408) {
+    res.status(408).sendFile(path.join(__dirname, "page", "status", "4xx", "408.html"))
+  } else if (err.status === 409) {
+    res.status(409).sendFile(path.join(__dirname, "page", "status", "4xx", "409.html"))
+  } else if (err.status === 410) {
+    res.status(410).sendFile(path.join(__dirname, "page", "status", "4xx", "410.html"))
+  } else if (err.status === 411) {
+    res.status(411).sendFile(path.join(__dirname, "page", "status", "4xx", "411.html"))
+  } else if (err.status === 412) {
+    res.status(412).sendFile(path.join(__dirname, "page", "status", "4xx", "412.html"))
+  } else if (err.status === 413) {
+    res.status(413).sendFile(path.join(__dirname, "page", "status", "4xx", "413.html"))
+  } else if (err.status === 414) {
+    res.status(414).sendFile(path.join(__dirname, "page", "status", "4xx", "414.html"))
+  } else if (err.status === 415) {
+    res.status(415).sendFile(path.join(__dirname, "page", "status", "4xx", "415.html"))
+  } else if (err.status === 416) {
+    res.status(416).sendFile(path.join(__dirname, "page", "status", "4xx", "416.html"))
+  } else if (err.status === 417) {
+    res.status(417).sendFile(path.join(__dirname, "page", "status", "4xx", "417.html"))
+  } else if (err.status === 418) {
+    res.status(418).sendFile(path.join(__dirname, "page", "status", "4xx", "418.html"))
+  } else if (err.status === 421) {
+    res.status(421).sendFile(path.join(__dirname, "page", "status", "4xx", "421.html"))
+  } else if (err.status === 422) {
+    res.status(422).sendFile(path.join(__dirname, "page", "status", "4xx", "422.html"))
+  } else if (err.status === 423) {
+    res.status(423).sendFile(path.join(__dirname, "page", "status", "4xx", "423.html"))
+  } else if (err.status === 424) {
+    res.status(424).sendFile(path.join(__dirname, "page", "status", "4xx", "424.html"))
+  } else if (err.status === 425) {
+    res.status(425).sendFile(path.join(__dirname, "page", "status", "4xx", "425.html"))
+  } else if (err.status === 426) {
+    res.status(426).sendFile(path.join(__dirname, "page", "status", "4xx", "426.html"))
+  } else if (err.status === 428) {
+    res.status(428).sendFile(path.join(__dirname, "page", "status", "4xx", "428.html"))
+  } else if (err.status === 429) {
+    res.status(429).sendFile(path.join(__dirname, "page", "status", "4xx", "429.html"))
+  } else if (err.status === 431) {
+    res.status(431).sendFile(path.join(__dirname, "page", "status", "4xx", "431.html"))
+  } else if (err.status === 451) {
+    res.status(451).sendFile(path.join(__dirname, "page", "status", "4xx", "451.html"))
+  } else if (err.status === 501) {
+    res.status(501).sendFile(path.join(__dirname, "page", "status", "5xx", "501.html"))
+  } else if (err.status === 502) {
+    res.status(502).sendFile(path.join(__dirname, "page", "status", "5xx", "502.html"))
+  } else if (err.status === 503) {
+    res.status(503).sendFile(path.join(__dirname, "page", "status", "5xx", "503.html"))
+  } else if (err.status === 504) {
+    res.status(504).sendFile(path.join(__dirname, "page", "status", "5xx", "504.html"))
+  } else if (err.status === 505) {
+    res.status(505).sendFile(path.join(__dirname, "page", "status", "5xx", "505.html"))
+  } else if (err.status === 506) {
+    res.status(506).sendFile(path.join(__dirname, "page", "status", "5xx", "506.html"))
+  } else if (err.status === 507) {
+    res.status(507).sendFile(path.join(__dirname, "page", "status", "5xx", "507.html"))
+  } else if (err.status === 508) {
+    res.status(508).sendFile(path.join(__dirname, "page", "status", "5xx", "508.html"))
+  } else if (err.status === 510) {
+    res.status(510).sendFile(path.join(__dirname, "page", "status", "5xx", "510.html"))
+  } else if (err.status === 511) {
+    res.status(511).sendFile(path.join(__dirname, "page", "status", "5xx", "511.html"))
+  } else {
+    res.status(500).sendFile(path.join(__dirname, "page", "status", "5xx", "500.html"))
+  }
+})
 
-    console.log(chalk.bgHex("#90EE90").hex("#333").bold(" Load Complete! "))
-    console.log(chalk.bgHex("#90EE90").hex("#333").bold(` Total Routes Loaded: ${totalRoutes} `))
-
-    const findAvailablePort = (startPort) => {
-      return new Promise((resolve) => {
-        const server = app
-          .listen(startPort, () => {
-            const port = server.address().port
-            server.close(() => resolve(port))
-          })
-          .on("error", () => {
-            resolve(findAvailablePort(startPort + 1))
-          })
+const findAvailablePort = (startPort) => {
+  return new Promise((resolve) => {
+    const server = app
+      .listen(startPort, () => {
+        const port = server.address().port
+        server.close(() => resolve(port))
       })
-    }
+      .on("error", () => {
+        resolve(findAvailablePort(startPort + 1))
+      })
+  })
+}
 
+const startServer = async () => {
+  try {
     PORT = await findAvailablePort(PORT)
 
     const server = app.listen(PORT, () => {
@@ -344,12 +419,13 @@ const startApplication = async () => {
     })
 
     startDiscordBot()
-  } catch (error) {
-    console.error(chalk.red('❌ Failed to start server:'), error)
+  } catch (err) {
+    console.error(chalk.bgRed.white(` Server failed to start: ${err.message} `))
     process.exit(1)
   }
 }
 
-startApplication()
+startServer()
 
 export default app
+                                   
