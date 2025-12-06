@@ -1,4 +1,6 @@
-import { ApiLog, UsageStats } from '../../database/models/ApiLog.js';
+//import { ApiLog, UsageStats } from '../../database/models/ApiLog.js';
+import { ApiLog } from '../../database/models/ApiLog.js';
+import { UsageStats } from '../../database/models/UsageStats.js';
 import { createApiKeyMiddleware } from '../../middleware/apikey.js';
 
 function sendResponse(req, res, statusCode, data) {
