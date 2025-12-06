@@ -392,4 +392,15 @@ export default (app) => {
       });
     }
   });
+
+  app.get('/admin/stats/live', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  // Send stats setiap 10 detik
+  const interval = setInterval(async () => {
+    const todayStats = await getTodayStats();
+    res.write(`data: ${JSON.stringify(todayStats)}\n\n`);
+  }, 10000);
+  
+  req.on('close', () => clearInterval(interval));
+});
 };
