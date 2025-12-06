@@ -16,14 +16,6 @@ app.get("/admin/dashboard", createApiKeyMiddleware(), (req, res) => {
   res.sendFile(path.join(pageDir, "dashboard.html"));
 });
 
-app.get("/admin/logs", createApiKeyMiddleware(), (req, res) => {
-  res.sendFile(path.join(pageDir, "logs.html"));
-});
-
-app.get("/", (req, res) => {
-  res.send("Website Halaman Online");
-});
-
 app.use((req, res) => {
   res.status(404).json({
     status: false,
