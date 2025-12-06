@@ -295,8 +295,7 @@
             </div>
         </footer>
     </div>
-
-    <!-- Sponsored Ads Modal -->
+  <!-- Sponsored Ads Modal -->
     <div class="modal fade" id="sponsorModal" tabindex="-1" aria-labelledby="sponsorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg sponsor-modal-dialog">
             <div class="modal-content sponsor-modal-content">
@@ -373,4 +372,446 @@
     </div>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <header class="toast-header">
+                <i class="toast-icon fas fa-info-circle me-2" aria-hidden="true"></i>
+                <strong class="me-auto toast-title">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </header>
+            <div class="toast-body">
+                This is a notification message.
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <img src="/src/images/icon.webp" alt="Icon" class="img-fluid mb-3" style="max-height: 150px;">
+                    <h5 class="mb-3">Important Notice!</h5>
+                    <p>If you find any bugs, suggestions, or feedback, please contact the admin</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="https://wa.me/message/WMS27AAA5BQHL1" target="_blank" class="btn btn-success">
+                            <i class="fab fa-whatsapp me-2"></i>Contact Admin
+                        </a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="showFeedbackModal()" class="btn btn-primary feedback-float" aria-label="Give feedback">
+        <i class="fas fa-comment-alt me-2"></i>Feedback
+    </button>
+
+    <style>
+    .feedback-float {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        border-radius: var(--border-radius);
+        padding: 10px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+    .feedback-float:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+    
+    /* STATISTICS STYLES */
+    .statistics-container {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: var(--border-radius);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        border-radius: var(--border-radius);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        min-width: 180px;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary-color);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-card-sm {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+        border-radius: calc(var(--border-radius) - 4px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        min-width: 140px;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card-sm:hover {
+        transform: translateY(-3px);
+        border-color: var(--primary-color);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 12px;
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .stat-icon-sm {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 8px;
+        font-size: 1rem;
+        color: white;
+    }
+    
+    .stat-content {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .stat-content-sm {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+    }
+    
+    .stat-number-sm {
+        font-size: 1.4rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        opacity: 0.9;
+        margin-top: 0.25rem;
+    }
+    
+    .stat-label-sm {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        opacity: 0.8;
+        margin-top: 0.15rem;
+    }
+    
+    /* Highlight specific cards */
+    .stat-card:nth-child(2) .stat-icon {
+        background: linear-gradient(135deg, #00b09b, #96c93d);
+    }
+    
+    .stat-card:nth-child(3) .stat-icon {
+        background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    }
+    
+    .stat-card:nth-child(4) .stat-icon {
+        background: linear-gradient(135deg, #8a2387, #e94057, #f27121);
+    }
+    
+    .stat-card:nth-child(5) .stat-icon {
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+    }
+    
+    .stat-card:nth-child(6) .stat-icon {
+        background: linear-gradient(135deg, #da4453, #89216b);
+    }
+    
+    /* Dark theme adjustments */
+    body.dark-theme .statistics-container {
+        background: rgba(0, 0, 0, 0.2);
+    }
+    
+    body.dark-theme .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    body.dark-theme .stat-card-sm {
+        background: rgba(255, 255, 255, 0.03);
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 1200px) {
+        .stat-card {
+            min-width: 160px;
+            padding: 0.75rem 1rem;
+        }
+        
+        .stat-number {
+            font-size: 1.6rem;
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .statistics-container .row {
+            justify-content: center !important;
+        }
+        
+        .stat-card {
+            min-width: 150px;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.25rem;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .statistics-container {
+            padding: 1rem;
+        }
+        
+        .stat-card {
+            min-width: 140px;
+            padding: 0.75rem;
+        }
+        
+        .stat-card-sm {
+            min-width: 120px;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+        }
+        
+        .stat-icon-sm {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+        }
+        
+        .stat-number {
+            font-size: 1.3rem;
+        }
+        
+        .stat-number-sm {
+            font-size: 1.2rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .stat-card {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.75rem;
+            min-width: 130px;
+        }
+        
+        .stat-card-sm {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+            min-width: 110px;
+        }
+        
+        .stat-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+        }
+        
+        .stat-number {
+            font-size: 1.2rem;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+        }
+        
+        .stat-label-sm {
+            font-size: 0.75rem;
+        }
+    }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/script.js"></script>
+    <script>
+    function showFeedbackModal() {
+        const feedbackModal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+        feedbackModal.show();
+    }
+    
+    // Function to format number with commas
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    
+    // Function to get current time for "Last updated"
+    function getCurrentTime() {
+        const now = new Date();
+        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+    
+    // Function to fetch statistics from server
+    function fetchStatistics() {
+        // Show loading state
+        document.getElementById('totalEndpoints').textContent = '...';
+        document.getElementById('totalRequests').textContent = '...';
+        document.getElementById('successRate').textContent = '...';
+        document.getElementById('uniqueIPs').textContent = '...';
+        document.getElementById('avgResponseTime').textContent = '...';
+        document.getElementById('requestsPerDay').textContent = '...';
+        document.getElementById('totalDays').textContent = '...';
+        document.getElementById('peakRequests').textContent = '...';
+        document.getElementById('failedRequests').textContent = '...';
+        
+        // Fetch data from your API endpoint
+        fetch('https://api.asuma.my.id/admin/stats/alltime')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status && data.result) {
+                    const stats = data.result.summary;
+                    const period = data.result.period;
+                    
+                    // Update statistics in the UI
+                    document.getElementById('totalEndpoints').textContent = formatNumber(stats.uniqueEndpoints || 0);
+                    document.getElementById('totalRequests').textContent = formatNumber(stats.totalRequests || 0);
+                    document.getElementById('successRate').textContent = stats.successRate || '0%';
+                    document.getElementById('uniqueIPs').textContent = formatNumber(stats.uniqueIPs || 0);
+                    document.getElementById('avgResponseTime').textContent = stats.avgResponseTime || '0ms';
+                    document.getElementById('requestsPerDay').textContent = formatNumber(stats.requestsPerDay || 0);
+                    document.getElementById('totalDays').textContent = formatNumber(period.totalDays || 1);
+                    document.getElementById('peakRequests').textContent = formatNumber(stats.peakRequests || 0);
+                    document.getElementById('failedRequests').textContent = formatNumber(stats.failedRequests || 0);
+                    
+                    // Update last updated time
+                    document.getElementById('lastUpdated').textContent = 'Last updated: ' + getCurrentTime();
+                    
+                    // Show success notification
+                    showNotification('Statistics updated successfully!', 'success');
+                } else {
+                    throw new Error('Invalid data format');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching statistics:', error);
+                
+                // Set default values or show error
+                document.getElementById('totalEndpoints').textContent = '23';
+                document.getElementById('totalRequests').textContent = '90';
+                document.getElementById('successRate').textContent = '76.67%';
+                document.getElementById('uniqueIPs').textContent = '6';
+                document.getElementById('avgResponseTime').textContent = '10491ms';
+                document.getElementById('requestsPerDay').textContent = '90';
+                document.getElementById('totalDays').textContent = '1';
+                document.getElementById('peakRequests').textContent = '90';
+                document.getElementById('failedRequests').textContent = '21';
+                document.getElementById('lastUpdated').textContent = 'Last updated: ' + getCurrentTime() + ' (using sample data)';
+                
+                // Show error notification
+                showNotification('Could not fetch live statistics. Showing sample data.', 'warning');
+            });
+    }
+    
+    // Function to show notification toast
+    function showNotification(message, type = 'info') {
+        const toastEl = document.getElementById('notificationToast');
+        const toastBody = toastEl.querySelector('.toast-body');
+        const toastIcon = toastEl.querySelector('.toast-icon');
+        const toastTitle = toastEl.querySelector('.toast-title');
+        
+        // Set message
+        toastBody.textContent = message;
+        
+        // Set icon and title based on type
+        if (type === 'success') {
+            toastIcon.className = 'toast-icon fas fa-check-circle me-2 text-success';
+            toastTitle.textContent = 'Success';
+        } else if (type === 'warning') {
+            toastIcon.className = 'toast-icon fas fa-exclamation-triangle me-2 text-warning';
+            toastTitle.textContent = 'Warning';
+        } else if (type === 'error') {
+            toastIcon.className = 'toast-icon fas fa-times-circle me-2 text-danger';
+            toastTitle.textContent = 'Error';
+        } else {
+            toastIcon.className = 'toast-icon fas fa-info-circle me-2 text-info';
+            toastTitle.textContent = 'Notification';
+        }
+        
+        // Show toast
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+    
+    // Function to initialize statistics
+    function initStatistics() {
+        // Fetch statistics when page loads
+        fetchStatistics();
+        
+        // Optional: Refresh statistics every 60 seconds
+        setInterval(fetchStatistics, 60000);
+        
+        // Add manual refresh button (optional - you can add this if needed)
+        // document.getElementById('refreshStats').addEventListener('click', fetchStatistics);
+    }
+    
+    // Fetch statistics when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hide loading screen when page is loaded
+        setTimeout(function() {
+            document.getElementById('loadingScreen').style.display = 'none';
+        }, 1000);
+        
+        // Initialize statistics
+        initStatistics();
+    });
+    </script>
+</body>
+</html>
