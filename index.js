@@ -274,6 +274,10 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "page", "index.html"))
 })
 
+app.get("/atmin/dasboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "page", "dasboard.html"))
+})
+
 app.get("/docs", (req, res) => {
   res.sendFile(path.join(__dirname, "page", "docs", "index.html"))
 })
