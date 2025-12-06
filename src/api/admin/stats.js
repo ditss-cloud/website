@@ -454,6 +454,441 @@ export default (app) => {
     req.on('close', () => { clearInterval(interval); res.end(); });
   });
 
+  app.get('/admin/stats/alltime', createApiKeyMiddleware(), async (req, res) => {
+  try {
+    const { 
+      groupBy = 'month', 
+      limit, 
+      include, 
+      exclude, 
+      format = 'json',
+      minRequests = 0 
+    } = req.query;
+    
+    const includedSections = include ? include.split(',') : null;
+    const excludedSections = exclude ? exclude.split(',') : null;
+    
+    const totalStats = await ApiLog.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalRequests: { $sum: 1 },
+          successRequests: { $sum: { $cond: [{ $eq: ["$success", true] }, 1, 0] } },
+          totalResponseTime: { $sum: "$responseTime" },
+          firstDate: { $min: "$createdAt" },
+          lastDate: { $max: "$createdAt" },
+          uniqueEndpoints: { $addToSet: "$endpoint" },
+          uniqueIPs: { $addToSet: "$ip" },
+          uniqueAPIKeys: { $addToSet: "$apiKey" }
+        }
+      }
+    ]);
+    
+    const totalData = totalStats[0] || {};
+    const totalDays = totalData.firstDate ? 
+      Math.ceil((totalData.lastDate - totalData.firstDate) / (1000 * 60 * 60 * 24)) : 0;
+    
+    const avgResponseTime = totalData.totalRequests > 0 ? 
+      Math.round(totalData.totalResponseTime / totalData.totalRequests) : 0;
+    const successRate = totalData.totalRequests > 0 ? 
+      ((totalData.successRequests / totalData.totalRequests) * 100).toFixed(2) : 0;
+    
+    const peakDay = await ApiLog.aggregate([
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          dailyRequests: { $sum: 1 }
+        }
+      },
+      { $sort: { dailyRequests: -1 } },
+      { $limit: 1 }
+    ]);
+    
+    const topEndpoints = await ApiLog.aggregate([
+      {
+        $group: {
+          _id: { endpoint: "$endpoint", method: "$method" },
+          totalRequests: { $sum: 1 },
+          successRequests: { $sum: { $cond: [{ $eq: ["$success", true] }, 1, 0] } },
+          totalResponseTime: { $sum: "$responseTime" },
+          firstUsed: { $min: "$createdAt" },
+          lastUsed: { $max: "$createdAt" }
+        }
+      },
+      { $match: { totalRequests: { $gte: parseInt(minRequests) } } },
+      { $sort: { totalRequests: -1 } },
+      { $limit: 10 }
+    ]);
+    
+    const methodDistribution = await ApiLog.aggregate([
+      {
+        $group: {
+          _id: "$method",
+          requests: { $sum: 1 }
+        }
+      },
+      { $sort: { requests: -1 } }
+    ]);
+    
+    const versionDistribution = await ApiLog.aggregate([
+      {
+        $group: {
+          _id: "$version",
+          requests: { $sum: 1 }
+        }
+      },
+      { $sort: { requests: -1 } }
+    ]);
+    
+    let timelineData = [];
+    let groupFormat = "%Y-%m";
+    
+    if (groupBy === 'day') {
+      groupFormat = "%Y-%m-%d";
+    } else if (groupBy === 'year') {
+      groupFormat = "%Y";
+    }
+    
+    const timelineAggregation = [
+      {
+        $group: {
+          _id: { $dateToString: { format: groupFormat, date: "$createdAt" } },
+          totalRequests: { $sum: 1 },
+          successRequests: { $sum: { $cond: [{ $eq: ["$success", true] }, 1, 0] } },
+          totalResponseTime: { $sum: "$responseTime" }
+        }
+      },
+      { $sort: { _id: -1 } }
+    ];
+    
+    if (limit) {
+      timelineAggregation.push({ $limit: parseInt(limit) });
+    }
+    
+    timelineData = await ApiLog.aggregate(timelineAggregation);
+    
+    const hourlyPattern = await ApiLog.aggregate([
+      {
+        $group: {
+          _id: { $hour: "$createdAt" },
+          avgRequests: { $avg: 1 },
+          successRate: { 
+            $avg: { $cond: [{ $eq: ["$success", true] }, 1, 0] } 
+          },
+          avgResponseTime: { $avg: "$responseTime" }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+    
+    const weeklyPattern = await ApiLog.aggregate([
+      {
+        $group: {
+          _id: { $dayOfWeek: "$createdAt" },
+          avgRequests: { $avg: 1 },
+          successRate: { 
+            $avg: { $cond: [{ $eq: ["$success", true] }, 1, 0] } 
+          }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+    
+    const fastestRequest = await ApiLog.findOne({ success: true })
+      .sort({ responseTime: 1 })
+      .select('endpoint responseTime createdAt method');
+    
+    const slowestRequest = await ApiLog.findOne({ success: true })
+      .sort({ responseTime: -1 })
+      .select('endpoint responseTime createdAt method');
+    
+    const result = {
+      period: {
+        totalDays,
+        firstDate: totalData.firstDate ? totalData.firstDate.toISOString().split('T')[0] : null,
+        lastDate: totalData.lastDate ? totalData.lastDate.toISOString().split('T')[0] : null
+      },
+      summary: {
+        totalRequests: totalData.totalRequests || 0,
+        successRequests: totalData.successRequests || 0,
+        failedRequests: (totalData.totalRequests || 0) - (totalData.successRequests || 0),
+        successRate: `${successRate}%`,
+        avgResponseTime: `${avgResponseTime}ms`,
+        totalResponseTime: `${totalData.totalResponseTime || 0}ms`,
+        peakRequests: peakDay[0]?.dailyRequests || 0,
+        peakDate: peakDay[0]?._id || null,
+        requestsPerDay: totalDays > 0 ? Math.round(totalData.totalRequests / totalDays) : 0,
+        requestsPerMonth: totalDays > 0 ? Math.round(totalData.totalRequests / (totalDays / 30)) : 0,
+        uniqueEndpoints: totalData.uniqueEndpoints?.length || 0,
+        uniqueIPs: totalData.uniqueIPs?.length || 0,
+        uniqueAPIKeys: totalData.uniqueAPIKeys?.filter(k => k).length || 0
+      },
+      timeline: {
+        [groupBy]: timelineData.map(item => ({
+          [groupBy === 'day' ? 'date' : groupBy === 'month' ? 'month' : 'year']: item._id,
+          totalRequests: item.totalRequests,
+          successRate: item.totalRequests > 0 ? 
+            `${((item.successRequests / item.totalRequests) * 100).toFixed(2)}%` : "0%",
+          avgResponseTime: item.totalRequests > 0 ? 
+            `${Math.round(item.totalResponseTime / item.totalRequests)}ms` : "0ms"
+        })).reverse()
+      },
+      topEndpointsAllTime: topEndpoints.map(ep => ({
+        endpoint: ep._id.endpoint,
+        method: ep._id.method,
+        totalRequests: ep.totalRequests,
+        successRate: ep.totalRequests > 0 ? 
+          `${((ep.successRequests / ep.totalRequests) * 100).toFixed(2)}%` : "0%",
+        avgResponseTime: ep.totalRequests > 0 ? 
+          `${Math.round(ep.totalResponseTime / ep.totalRequests)}ms` : "0ms",
+        percentage: totalData.totalRequests > 0 ? 
+          `${((ep.totalRequests / totalData.totalRequests) * 100).toFixed(2)}%` : "0%",
+        firstUsed: ep.firstUsed ? ep.firstUsed.toISOString().split('T')[0] : null,
+        lastUsed: ep.lastUsed ? ep.lastUsed.toISOString().split('T')[0] : null
+      })),
+      methodDistribution: methodDistribution.reduce((acc, item) => {
+        acc[item._id] = {
+          requests: item.requests,
+          percentage: totalData.totalRequests > 0 ? 
+            `${((item.requests / totalData.totalRequests) * 100).toFixed(2)}%` : "0%"
+        };
+        return acc;
+      }, {}),
+      versionDistribution: versionDistribution.reduce((acc, item) => {
+        acc[item._id] = {
+          requests: item.requests,
+          percentage: totalData.totalRequests > 0 ? 
+            `${((item.requests / totalData.totalRequests) * 100).toFixed(2)}%` : "0%"
+        };
+        return acc;
+      }, {}),
+      hourlyPattern: Array(24).fill(0).map((_, hour) => {
+        const hourData = hourlyPattern.find(h => h._id === hour);
+        return {
+          hour: `${String(hour).padStart(2, '0')}:00`,
+          avgRequests: hourData ? hourData.avgRequests.toFixed(1) : "0.0",
+          successRate: hourData ? `${(hourData.successRate * 100).toFixed(2)}%` : "0%",
+          avgResponseTime: hourData ? `${Math.round(hourData.avgResponseTime)}ms` : "0ms"
+        };
+      }),
+      weeklyPattern: {
+        monday: weeklyPattern.find(d => d._id === 2) || { avgRequests: 0, successRate: 0 },
+        tuesday: weeklyPattern.find(d => d._id === 3) || { avgRequests: 0, successRate: 0 },
+        wednesday: weeklyPattern.find(d => d._id === 4) || { avgRequests: 0, successRate: 0 },
+        thursday: weeklyPattern.find(d => d._id === 5) || { avgRequests: 0, successRate: 0 },
+        friday: weeklyPattern.find(d => d._id === 6) || { avgRequests: 0, successRate: 0 },
+        saturday: weeklyPattern.find(d => d._id === 7) || { avgRequests: 0, successRate: 0 },
+        sunday: weeklyPattern.find(d => d._id === 1) || { avgRequests: 0, successRate: 0 }
+      },
+      performanceMetrics: {
+        fastestRequest: fastestRequest ? {
+          endpoint: fastestRequest.endpoint,
+          responseTime: `${fastestRequest.responseTime}ms`,
+          date: fastestRequest.createdAt.toISOString().split('T')[0],
+          method: fastestRequest.method
+        } : null,
+        slowestRequest: slowestRequest ? {
+          endpoint: slowestRequest.endpoint,
+          responseTime: `${slowestRequest.responseTime}ms`,
+          date: slowestRequest.createdAt.toISOString().split('T')[0],
+          method: slowestRequest.method
+        } : null
+      }
+    };
+    
+    if (includedSections) {
+      Object.keys(result).forEach(key => {
+        if (!includedSections.includes(key)) {
+          delete result[key];
+        }
+      });
+    }
+    
+    if (excludedSections) {
+      excludedSections.forEach(section => {
+        delete result[section];
+      });
+    }
+    
+    if (format === 'csv') {
+      const json2csv = require('json2csv').parse;
+      const csv = json2csv([result.summary]);
+      res.header('Content-Type', 'text/csv');
+      res.header('Content-Disposition', 'attachment; filename=alltime-stats.csv');
+      return res.send(csv);
+    }
+    
+    sendResponse(req, res, 200, { result });
+    
+  } catch (error) {
+    sendResponse(req, res, 500, { error: error.message });
+  }
+});
+
+// ENDPOINT TAMBAHAN:
+
+app.get('/admin/stats/alltime/summary', createApiKeyMiddleware(), async (req, res) => {
+  try {
+    const totalStats = await ApiLog.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalRequests: { $sum: 1 },
+          successRequests: { $sum: { $cond: [{ $eq: ["$success", true] }, 1, 0] } },
+          totalResponseTime: { $sum: "$responseTime" },
+          firstDate: { $min: "$createdAt" },
+          lastDate: { $max: "$createdAt" },
+          uniqueEndpoints: { $addToSet: "$endpoint" }
+        }
+      }
+    ]);
+    
+    const data = totalStats[0] || {};
+    const totalDays = data.firstDate ? 
+      Math.ceil((data.lastDate - data.firstDate) / (1000 * 60 * 60 * 24)) : 0;
+    const avgResponseTime = data.totalRequests > 0 ? 
+      Math.round(data.totalResponseTime / data.totalRequests) : 0;
+    const successRate = data.totalRequests > 0 ? 
+      ((data.successRequests / data.totalRequests) * 100).toFixed(2) : 0;
+    
+    sendResponse(req, res, 200, {
+      totalRequests: data.totalRequests || 0,
+      successRate: `${successRate}%`,
+      avgResponseTime: `${avgResponseTime}ms`,
+      uniqueEndpoints: data.uniqueEndpoints?.length || 0,
+      totalDays,
+      firstDate: data.firstDate ? data.firstDate.toISOString().split('T')[0] : null,
+      lastDate: data.lastDate ? data.lastDate.toISOString().split('T')[0] : null
+    });
+    
+  } catch (error) {
+    sendResponse(req, res, 500, { error: error.message });
+  }
+});
+
+app.get('/admin/stats/alltime/milestones', createApiKeyMiddleware(), async (req, res) => {
+  try {
+    const milestones = [
+      { threshold: 1000, event: "First 1000 requests" },
+      { threshold: 10000, event: "First 10000 requests" },
+      { threshold: 50000, event: "Reached 50000 requests" },
+      { threshold: 100000, event: "Reached 100000 requests" },
+      { threshold: 500000, event: "Half million requests" },
+      { threshold: 1000000, event: "1 million requests milestone" }
+    ];
+    
+    const totalRequests = await ApiLog.countDocuments();
+    const achievedMilestones = [];
+    
+    for (const milestone of milestones) {
+      if (totalRequests >= milestone.threshold) {
+        const milestoneDate = await ApiLog.findOne({}, { createdAt: 1 })
+          .sort({ createdAt: 1 })
+          .skip(milestone.threshold - 1);
+        
+        achievedMilestones.push({
+          date: milestoneDate?.createdAt.toISOString().split('T')[0] || null,
+          event: milestone.event,
+          value: milestone.threshold
+        });
+      }
+    }
+    
+    sendResponse(req, res, 200, {
+      currentTotal: totalRequests,
+      nextMilestone: milestones.find(m => m.threshold > totalRequests)?.threshold || null,
+      milestones: achievedMilestones
+    });
+    
+  } catch (error) {
+    sendResponse(req, res, 500, { error: error.message });
+  }
+});
+
+app.get('/admin/stats/alltime/comparison', createApiKeyMiddleware(), async (req, res) => {
+  try {
+    const { period1, period2 } = req.query;
+    
+    if (!period1 || !period2) {
+      return sendResponse(req, res, 400, { error: "period1 and period2 parameters are required" });
+    }
+    
+    const getPeriodData = async (period) => {
+      let startDate, endDate;
+      
+      if (period.match(/^\d{4}-\d{2}$/)) {
+        startDate = new Date(period + '-01');
+        endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+      } else if (period.match(/^\d{4}$/)) {
+        startDate = new Date(period + '-01-01');
+        endDate = new Date(parseInt(period) + 1 + '-01-01');
+      } else {
+        startDate = new Date(period);
+        endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 1);
+      }
+      
+      const stats = await ApiLog.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: startDate, $lt: endDate }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalRequests: { $sum: 1 },
+            successRequests: { $sum: { $cond: [{ $eq: ["$success", true] }, 1, 0] } },
+            totalResponseTime: { $sum: "$responseTime" }
+          }
+        }
+      ]);
+      
+      const data = stats[0] || { totalRequests: 0, successRequests: 0, totalResponseTime: 0 };
+      const successRate = data.totalRequests > 0 ? 
+        ((data.successRequests / data.totalRequests) * 100).toFixed(2) : 0;
+      const avgResponseTime = data.totalRequests > 0 ? 
+        Math.round(data.totalResponseTime / data.totalRequests) : 0;
+      
+      return {
+        period,
+        totalRequests: data.totalRequests,
+        successRate: `${successRate}%`,
+        avgResponseTime: `${avgResponseTime}ms`
+      };
+    };
+    
+    const [period1Data, period2Data] = await Promise.all([
+      getPeriodData(period1),
+      getPeriodData(period2)
+    ]);
+    
+    const requestGrowth = period1Data.totalRequests > 0 ? 
+      ((period2Data.totalRequests - period1Data.totalRequests) / period1Data.totalRequests * 100).toFixed(2) : 0;
+    
+    const successRate1 = parseFloat(period1Data.successRate);
+    const successRate2 = parseFloat(period2Data.successRate);
+    const successRateGrowth = (successRate2 - successRate1).toFixed(2);
+    
+    const responseTime1 = parseInt(period1Data.avgResponseTime);
+    const responseTime2 = parseInt(period2Data.avgResponseTime);
+    const responseTimeChange = responseTime2 - responseTime1;
+    
+    sendResponse(req, res, 200, {
+      period1: period1Data,
+      period2: period2Data,
+      comparison: {
+        requestGrowth: `${parseFloat(requestGrowth) >= 0 ? '+' : ''}${requestGrowth}%`,
+        successRateGrowth: `${parseFloat(successRateGrowth) >= 0 ? '+' : ''}${successRateGrowth}%`,
+        avgResponseTimeChange: `${responseTimeChange >= 0 ? '+' : ''}${responseTimeChange}ms`
+      }
+    });
+    
+  } catch (error) {
+    sendResponse(req, res, 500, { error: error.message });
+  }
+});
+
   app.get('/admin/stats/cache/clear', createApiKeyMiddleware(), (req, res) => {
     const stats = cache.getStats();
     cache.flushAll();
