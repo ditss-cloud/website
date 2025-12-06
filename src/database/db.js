@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
+//const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = "mongodb+srv://ditsscloud_db_user:ZiUOFpmNOqW5hQVC@asuma-cluster.pmod26g.mongodb.net/?appName=Asuma-Cluster";
 if (!MONGODB_URI) {
   throw new Error('Please define MONGODB_URI environment variable');
 }
