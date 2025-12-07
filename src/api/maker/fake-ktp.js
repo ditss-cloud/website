@@ -9,9 +9,9 @@ async function setupFonts() {
   
   try {
     const [arrialResponse, ocrResponse, signResponse] = await Promise.all([
-      axios.get('https://api.nekolabs.web.id/f/arrial.ttf', { responseType: 'arraybuffer' }),
-      axios.get('https://api.nekolabs.web.id/f/ocr.ttf', { responseType: 'arraybuffer' }),
-      axios.get('https://api.nekolabs.web.id/f/sign.otf', { responseType: 'arraybuffer' })
+      axios.get('https://cdn.asuma.my.id/upload/tbzu.ttf', { responseType: 'arraybuffer' }),
+      axios.get('https://cdn.asuma.my.id/upload/3kamag6t.ttf', { responseType: 'arraybuffer' }),
+      axios.get('https://cdn.asuma.my.id/upload/slgwacq.otf', { responseType: 'arraybuffer' })
     ]);
     
     GlobalFonts.register(Buffer.from(arrialResponse.data), 'ArrialKTP');
@@ -32,7 +32,7 @@ async function ktpgen(params) {
     const ctx = canvas.getContext('2d');
     
     const [templateImg, pasPhotoImg] = await Promise.all([
-      loadImage('https://api.nekolabs.web.id/f/template.png'),
+      loadImage('https://cdn.asuma.my.id/upload/bh6ax.png'),
       loadImage(params.pas_photo)
     ]);
     
