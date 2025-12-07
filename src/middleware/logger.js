@@ -139,7 +139,7 @@ export function createLogger() {
   return (req, res, next) => {
     // ==================== FILTER: HANYA CATAT API REQUEST ====================
     const apiPatterns = [
-      /^\/apiei\//,           // /api/*
+      /^\/docs\//,           // /api/*
       /^\/ai\//,            // /ai/*
       /^\/random\//,        // /random/*
       /^\/maker\//,         // /maker/*
