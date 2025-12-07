@@ -1,30 +1,37 @@
-import axios from 'axios';
+import fetch from 'node-fetch';
 import { createApiKeyMiddleware } from "../../middleware/apikey.js";
 
-async function generateCarbon(code, theme = 'One Dark') {
-  const response = await axios.post('https://carbon-api.vercel.app/api', {
-    code: code,
-    theme: theme
-  }, {
-    responseType: 'arraybuffer'
+async function CarbonifyV2(code) {
+  const response = await fetch("https://carbon-api.vercel.app/api", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      code: code
+    })
   });
   
-  return Buffer.from(response.data);
+  const blob = await response.blob();
+  const arrayBuffer = await blob.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  return buffer;
 }
 
 export default (app) => {
   app.get("/v1/maker/carbon", createApiKeyMiddleware(), async (req, res) => {
     try {
-      const { code, theme = 'One Dark' } = req.query;
+      const { code } = req.query;
       
       if (!code) {
         return res.status(400).json({
           status: false,
+          creator: "DitssCloud",
           error: 'Parameter "code" is required'
         });
       }
       
-      const buffer = await generateCarbon(code, theme);
+      const buffer = await CarbonifyV2(code);
       
       res.set({
         'Content-Type': 'image/png',
@@ -36,6 +43,7 @@ export default (app) => {
     } catch (error) {
       res.status(500).json({
         status: false,
+        creator: "DitssCloud",
         error: error.message
       });
     }
@@ -43,16 +51,17 @@ export default (app) => {
 
   app.post("/v2/maker/carbon", createApiKeyMiddleware(), async (req, res) => {
     try {
-      const { code, theme = 'One Dark' } = req.body;
+      const { code } = req.body;
       
       if (!code) {
         return res.status(400).json({
           status: false,
+          creator: "DitssCloud",
           error: 'Parameter "code" is required'
         });
       }
       
-      const buffer = await generateCarbon(code, theme);
+      const buffer = await CarbonifyV2(code);
       
       res.set({
         'Content-Type': 'image/png',
@@ -64,6 +73,7 @@ export default (app) => {
     } catch (error) {
       res.status(500).json({
         status: false,
+        creator: "DitssCloud",
         error: error.message
       });
     }
