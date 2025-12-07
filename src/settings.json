@@ -77,6 +77,14 @@
           "params": {
             "text": "Text to be inserted into the BRAT video (required)"
           }
+        },{
+          "name": "iPhone chat",
+          "desc": "Generate iPhone chat WhatsApp",
+          "path": "/v1/maker/imessage?text=Hello World",
+          "status": "ready",
+          "params": {
+            "text": "Text to be inserted into the BRAT video (required)"
+          }
         }
       ]
     }
