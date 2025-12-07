@@ -318,7 +318,7 @@ server.on("upgrade", (req, socket, head) => {
     }
 });
 
-app.get("/docs", (req, res) => {
+app.get("/docs/", (req, res) => {
   res.sendFile(path.join(__dirname, "page", "docs", "index.html"))
 })
 
