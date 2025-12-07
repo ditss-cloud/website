@@ -96,7 +96,7 @@ async function getBratVideo(text, format = "mp4") {
 
   // ============= ENDPOINT: BRAT IMAGE (PNG) =============
 
-  app.get("/maker/brat", createApiKeyMiddleware(), async (req, res) => {
+  app.get("/v1/maker/brat", createApiKeyMiddleware(), async (req, res) => {
     try {
       const text = req.query.text || req.body?.text;
 
@@ -120,7 +120,7 @@ async function getBratVideo(text, format = "mp4") {
     }
   });
 
-  app.post("/maker/brat", createApiKeyMiddleware(), async (req, res) => {
+  app.post("/v2/maker/brat", createApiKeyMiddleware(), async (req, res) => {
     try {
       const text = req.query.text || req.body?.text;
 
@@ -146,7 +146,7 @@ async function getBratVideo(text, format = "mp4") {
 
   // ============= ENDPOINT: BRAT VIDEO (MP4) =============
 
-  app.get("/maker/bratvid", createApiKeyMiddleware(), async (req, res) => {
+  app.get("/v1/maker/bratvid", createApiKeyMiddleware(), async (req, res) => {
     try {
       const text = req.query.text || req.body?.text;
 
@@ -170,7 +170,7 @@ async function getBratVideo(text, format = "mp4") {
     }
   });
 
-  app.post("/maker/bratvid", createApiKeyMiddleware(), async (req, res) => {
+  app.post("/v2/maker/bratvid", createApiKeyMiddleware(), async (req, res) => {
     try {
       const text = req.query.text || req.body?.text;
 
@@ -196,7 +196,7 @@ async function getBratVideo(text, format = "mp4") {
 
   // ============= ENDPOINT: BRAT GIF =============
 
-  app.get("/maker/bratgif", createApiKeyMiddleware(), async (req, res) => {
+  app.get("/v1/maker/bratgif", createApiKeyMiddleware(), async (req, res) => {
     try {
       const text = req.query.text || req.body?.text;
 
@@ -220,7 +220,7 @@ async function getBratVideo(text, format = "mp4") {
     }
   });
 
-  app.post("/maker/bratgif", createApiKeyMiddleware(), async (req, res) => {
+  app.post("/v2/maker/bratgif", createApiKeyMiddleware(), async (req, res) => {
     try {
       const text = req.query.text || req.body?.text;
 
