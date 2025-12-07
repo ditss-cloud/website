@@ -735,7 +735,7 @@
                     document.getElementById('lastUpdated').textContent = 'Last updated: ' + getCurrentTime();
                     
                     // Show success notification
-                    showNotification('Statistics updated successfully!', 'success');
+                    //showNotification('Statistics updated successfully!', 'success');
                 } else {
                     throw new Error('Invalid data format');
                 }
@@ -796,7 +796,7 @@
         fetchStatistics();
         
         // Optional: Refresh statis 
-        setInterval(fetchStatistics, 60000);
+        setInterval(fetchStatistics, 30000);
         
         // Add manual refresh button (optional - you can add this if needed)
         // document.getElementById('refreshStats').addEventListener('click', fetchStatistics);
