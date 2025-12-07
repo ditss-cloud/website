@@ -2,13 +2,17 @@ import axios from "axios";
 import { createApiKeyMiddleware } from "../../middleware/apikey.js";
 
 async function CarbonifyAxios(code, theme = "Monokai") {
-  const { data } = await axios.post(
-    "https://carbon-api.vercel.app/api",
-    { code, theme },
-    { responseType: "arraybuffer" }
-  );
+  const res = await axios({
+    url: "https://carbon-api.vercel.app/api",
+    method: "POST",
+    data: { code, theme },
+    responseType: "arraybuffer",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
 
-  return Buffer.from(data);
+  return Buffer.from(res.data);
 }
 
 export default (app) => {
