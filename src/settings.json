@@ -36,12 +36,12 @@
       "name": "Artificial Intelligence",
       "items": [
         {
-          "name": "LuminAI",
-          "desc": "Advanced AI assistant powered by LuminAI for intelligent conversations",
-          "path": "/ai/luminai?text=",
-          "status": "error",
+          "name": "NSFW Content Checker",
+          "desc": "Deteksi konten NSFW pada gambar menggunakan AI",
+          "path": "/v1/ai/nsfwchecker?url=",
+          "status": "active",
           "params": {
-            "text": "Text message for the AI to respond to"
+            "url": "URL gambar yang akan diperiksa"
           }
         }
       ]
