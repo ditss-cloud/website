@@ -77,13 +77,56 @@
           "params": {
             "text": "Text to be inserted into the BRAT video (required)"
           }
-        },{
+        },
+        {
           "name": "iPhone chat",
           "desc": "Generate iPhone chat WhatsApp",
           "path": "/v1/maker/imessage?text=Hello World",
           "status": "ready",
           "params": {
             "text": "Text to be inserted into the BRAT video (required)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Image Processing",
+      "items": [
+        {
+          "name": "Background Remover",
+          "desc": "Remove background from images with AI",
+          "path": "/v1/image/removebg?url=",
+          "status": "ready",
+          "params": {
+            "url": "URL of the image to process"
+          }
+        },
+        {
+          "name": "Image Enhancer",
+          "desc": "Enhance image quality and resolution",
+          "path": "/v1/image/enhance?url=",
+          "status": "ready",
+          "params": {
+            "url": "URL of the image to enhance"
+          }
+        },
+        {
+          "name": "Image Upscaler",
+          "desc": "Upscale images to higher resolution",
+          "path": "/v1/image/upscale?url=",
+          "status": "ready",
+          "params": {
+            "url": "URL of the image to upscale",
+            "scale": "Upscale factor (2x, 4x, etc)"
+          }
+        },
+        {
+          "name": "Image Colorizer",
+          "desc": "Colorize black and white photos",
+          "path": "/v1/image/colorize?url=",
+          "status": "ready",
+          "params": {
+            "url": "URL of the black and white image"
           }
         }
       ]
