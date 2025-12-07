@@ -63,7 +63,7 @@
         {
           "name": "BRAT Generator",
           "desc": "Generate BRAT-style text images with customizable colors and backgrounds",
-          "path": "/maker/brat?text=Hello World",
+          "path": "/v1/maker/brat?text=Hello World",
           "status": "ready",
           "params": {
             "text": "Text to be inserted into the BRAT image (required)"
@@ -72,7 +72,7 @@
         {
           "name": "BRAT Video Generator",
           "desc": "Generate animated BRAT-style text videos with customizable colors and backgrounds",
-          "path": "/maker/bratvid?text=Hello World",
+          "path": "/v1/maker/bratvid?text=Hello World",
           "status": "ready",
           "params": {
             "text": "Text to be inserted into the BRAT video (required)"
