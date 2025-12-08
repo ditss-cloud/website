@@ -38,7 +38,7 @@
         {
           "name": "NSFW Content Checker",
           "desc": "Deteksi konten NSFW pada gambar menggunakan AI",
-          "path": "/v1/ai/nsfwchecker?url=",
+          "path": "/v1/ai/nsfwchecker?url=https://cdn.ditss.biz.id/3Bcv.jpg",
           "status": "active",
           "params": {
             "url": "URL gambar yang akan diperiksa"
