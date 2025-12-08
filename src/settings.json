@@ -87,32 +87,86 @@
             "text": "Text to be inserted into the BRAT video (required)"
           }
         },
-        {
-          "name": "Fake KTP Generator",
-          "desc": "Generate realistic fake KTP Indonesia with custom data, photo, and full layout.",
-          "path": "/v1/maker/fake-ktp?nama=JOHN%20DOE&provinsi=DKI%20JAKARTA&kota=JAKARTA%20SELATAN&nik=3174012345678901&ttl=JAKARTA,01-01-1990&jenis_kelamin=LAKI-LAKI&golongan_darah=O&alamat=JL.%20SUDIRMAN%20NO.%20123&rtRw=001/002&kel_desa=KEBAYORAN%20BARU&kecamatan=KEBAYORAN%20BARU&agama=ISLAM&status=BELUM%20KAWIN&pekerjaan=KARYAWAN%20SWASTA&kewarganegaraan=WNI&masa_berlaku=SEUMUR%20HIDUP&terbuat=01-01-2020&pas_photo=https://cdn.ditss.biz.id/3Bcv.jpg",
-          "status": "ready",
-          "params": {
-            "nama": "Nama lengkap pemilik KTP (required)",
-            "provinsi": "Nama provinsi",
-            "kota": "Nama kota / kabupaten",
-            "nik": "16 digit Nomor Induk Kependudukan",
-            "ttl": "Tempat lahir dan tanggal lahir. Contoh: JAKARTA,01-01-1990",
-            "jenis_kelamin": "LAKI-LAKI atau PEREMPUAN",
-            "golongan_darah": "Golongan darah: O, A, B, AB",
-            "alamat": "Alamat lengkap",
-            "rtRw": "Format: RT/RW (contoh: 001/002)",
-            "kel_desa": "Kelurahan / desa",
-            "kecamatan": "Kecamatan",
-            "agama": "Agama pemilik KTP",
-            "status": "Status perkawinan (BELUM KAWIN, KAWIN, CERAI)",
-            "pekerjaan": "Pekerjaan pemilik KTP",
-            "kewarganegaraan": "Biasanya WNI",
-            "masa_berlaku": "Contoh: SEUMUR HIDUP",
-            "terbuat": "Tanggal pembuatan: 01-01-2020",
-            "pas_photo": "URL foto pemilik KTP (required)"
-          }
-        }
+        {  
+          "name": "Fake KTP Generator",  
+          "desc": "Generate realistic fake KTP Indonesia with custom data, photo, and full layout.",  
+  "path": "/v1/maker/fake-ktp?nama=JOHN%20DOE&provinsi=DKI%20JAKARTA&kota=JAKARTA%20SELATAN&nik=3174012345678901&ttl=JAKARTA,01-01-1990&jenis_kelamin=LAKI-LAKI&golongan_darah=O&alamat=JL.%20SUDIRMAN%20NO.%20123&rtRw=001/002&kel_desa=KEBAYORAN%20BARU&kecamatan=KEBAYORAN%20BARU&agama=ISLAM&status=BELUM%20KAWIN&pekerjaan=KARYAWAN%20SWASTA&kewarganegaraan=WNI&masa_berlaku=SEUMUR%20HIDUP&terbuat=01-01-2020&pas_photo=https://cdn.ditss.biz.id/3Bcv.jpg",  
+  "status": "ready",  
+  "params": {  
+  "nama": {  
+    "info": "Nama lengkap pemilik KTP (required)",  
+    "example": "JOHN DOE"  
+  },  
+  "provinsi": {  
+    "info": "Nama provinsi",  
+    "example": "DKI JAKARTA"  
+  },  
+  "kota": {  
+    "info": "Nama kota",  
+    "example": "JAKARTA SELATAN"  
+  },  
+  "nik": {  
+    "info": "16 Digit NIK",  
+    "example": "3174012345678901"  
+  },  
+  "ttl": {  
+    "info": "Tempat, tanggal lahir",  
+    "example": "JAKARTA,01-01-1990"  
+  },  
+  "jenis_kelamin": {  
+    "info": "Jenis Kelamin",  
+    "example": "LAKI-LAKI"  
+  },  
+  "golongan_darah": {  
+    "info": "Golongan darah",  
+    "example": "O"  
+  },  
+  "alamat": {  
+    "info": "Alamat lengkap",  
+    "example": "JL. SUDIRMAN NO. 123"  
+  },  
+  "rtRw": {  
+    "info": "RT/RW",  
+    "example": "001/002"  
+  },  
+  "kel_desa": {  
+    "info": "Kelurahan/Desa",  
+    "example": "KEBAYORAN BARU"  
+  },  
+  "kecamatan": {  
+    "info": "Kecamatan",  
+    "example": "KEBAYORAN BARU"  
+  },  
+  "agama": {  
+    "info": "Agama",  
+    "example": "ISLAM"  
+  },  
+  "status": {  
+    "info": "Status perkawinan",  
+    "example": "BELUM KAWIN"  
+  },  
+  "pekerjaan": {  
+    "info": "Pekerjaan",  
+    "example": "KARYAWAN SWASTA"  
+  },  
+  "kewarganegaraan": {  
+    "info": "Kewarganegaraan",  
+    "example": "WNI"  
+  },  
+  "masa_berlaku": {  
+    "info": "Berlaku hingga",  
+    "example": "SEUMUR HIDUP"  
+  },  
+  "terbuat": {  
+    "info": "Tanggal dibuat",  
+    "example": "01-01-2020"  
+  },  
+  "pas_photo": {  
+    "info": "URL foto",  
+    "example": "https://cdn.ditss.biz.id/3Bcv.jpg"  
+  }  
+}  
+}
       ]
     },
     {
