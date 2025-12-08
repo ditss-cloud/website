@@ -1353,7 +1353,7 @@ const setupModalForApi = (apiData) => {
         }
 
         downloadImageBtn.href = imageUrl
-        downloadImageBtn.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1] || "png"}`
+        downloadImageBtn.download = `${Date.now()}-${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1] || "png"}`
         downloadImageBtn.style.display = "inline-block"
       } else if (contentType && contentType.includes("video/")) {
         const blob = await response.blob()
@@ -1379,7 +1379,7 @@ const setupModalForApi = (apiData) => {
         }
 
         downloadVideoBtn.href = videoUrl
-        downloadVideoBtn.download = `${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1] || "mp4"}`
+        downloadVideoBtn.download = `${Date.now()}-${apiName.toLowerCase().replace(/\s+/g, "-")}.${blob.type.split("/")[1] || "mp4"}`
         downloadVideoBtn.style.display = "inline-block"
       } else if (contentType && contentType.includes("application/json")) {
         const data = await response.json()
