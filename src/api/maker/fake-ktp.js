@@ -84,20 +84,19 @@ async function ktpgen(params) {
     ctx.fillText(params.nik, 170, 105);
     
     ctx.font = '16px ArrialKTP';
-    ctx.fillText(upper(params.nama), 190, 149); //145
-    ctx.fillText(upper(params.ttl), 190, 168);
-    ctx.fillText(upper(params.jenis_kelamin), 190, 191);
-    ctx.fillText(upper(params.golongan_darah || '-'), 463, 190);
-    ctx.fillText(upper(params.alamat), 190, 212);
-    ctx.fillText(upper(params.rtRw), 190, 234);
-    ctx.fillText(upper(params.kel_desa), 190, 257);
-    ctx.fillText(upper(params.kecamatan), 190, 279);
-    ctx.fillText(upper(params.agama), 190, 300);
-    ctx.fillText(upper(params.status), 190, 323);
-    ctx.fillText(upper(params.pekerjaan), 190, 346);
-    ctx.fillText(upper(params.kewarganegaraan), 190, 369);
-    ctx.fillText(upper(params.masa_berlaku), 190, 390);
-    
+ctx.fillText(upper(params.nama), 190, 149);            // 145 + 4
+ctx.fillText(upper(params.ttl), 190, 172);             // 168 + 4
+ctx.fillText(upper(params.jenis_kelamin), 190, 195);   // 191 + 4
+ctx.fillText(upper(params.golongan_darah || '-'), 463, 194); // 190 + 4
+ctx.fillText(upper(params.alamat), 190, 216);          // 212 + 4
+ctx.fillText(upper(params.rtRw), 190, 238);            // 234 + 4
+ctx.fillText(upper(params.kel_desa), 190, 261);        // 257 + 4
+ctx.fillText(upper(params.kecamatan), 190, 283);       // 279 + 4
+ctx.fillText(upper(params.agama), 190, 304);           // 300 + 4
+ctx.fillText(upper(params.status), 190, 327);          // 323 + 4
+ctx.fillText(upper(params.pekerjaan), 190, 350);       // 346 + 4
+ctx.fillText(upper(params.kewarganegaraan), 190, 373); // 369 + 4
+ctx.fillText(upper(params.masa_berlaku), 190, 394);    // 390 + 4
     ctx.font = '12px ArrialKTP';
     ctx.fillText(`KOTA ${upper(params.kota)}`, 553, 345);
     ctx.fillText(params.terbuat, 570, 365);
