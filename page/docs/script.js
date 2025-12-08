@@ -756,121 +756,121 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  const renderApiCategories = () => {
+const renderApiCategories = () => {
     if (!DOM.apiContent || !settings.categories || !settings.categories.length) {
-      displayErrorState("No API categories found.")
-      return
+        displayErrorState("Tidak ada kategori API yang ditemukan.");
+        return;
     }
-    DOM.apiContent.innerHTML = ""
+    DOM.apiContent.innerHTML = '';
 
     settings.categories.forEach((category, categoryIndex) => {
-      const sortedItems = category.items.sort((a, b) => a.name.localeCompare(b.name))
-
-      const categorySection = document.createElement("section")
-      categorySection.id = `category-${category.name.toLowerCase().replace(/\s+/g, "-")}`
-      categorySection.className = "category-section"
-      categorySection.style.animationDelay = `${categoryIndex * 0.15}s`
-      categorySection.setAttribute("aria-labelledby", `category-title-${categoryIndex}`)
-
-      const categoryHeader = document.createElement("h3")
-      categoryHeader.id = `category-title-${categoryIndex}`
-      categoryHeader.className = "category-header"
-
-      if (category.icon) {
-        const iconEl = document.createElement("i")
-        iconEl.className = `${category.icon} me-2`
-        iconEl.setAttribute("aria-hidden", "true")
-        categoryHeader.appendChild(iconEl)
-      }
-      categoryHeader.appendChild(document.createTextNode(category.name))
-      categorySection.appendChild(categoryHeader)
-
-      if (category.image) {
-        const img = document.createElement("img")
-        img.src = category.image
-        img.alt = `${category.name} banner`
-        img.className = "category-image img-fluid rounded mb-3 shadow-sm"
-        img.loading = "lazy"
-        categorySection.appendChild(img)
-      }
-
-      const itemsRow = document.createElement("div")
-      itemsRow.className = "row"
-
-      sortedItems.forEach((item, itemIndex) => {
-        const itemCol = document.createElement("div")
-        itemCol.className = "col-12 col-md-6 col-lg-4 api-item"
-        itemCol.dataset.name = item.name
-        itemCol.dataset.desc = item.desc
-        itemCol.dataset.category = category.name
-        itemCol.style.animationDelay = `${itemIndex * 0.05 + 0.2}s`
-
-        const apiCard = document.createElement("article")
-        apiCard.className = "api-card h-100"
-        apiCard.setAttribute("aria-labelledby", `api-title-${categoryIndex}-${itemIndex}`)
-
-        const cardInfo = document.createElement("div")
-        cardInfo.className = "api-card-info"
-
-        const itemTitle = document.createElement("h5")
-        itemTitle.id = `api-title-${categoryIndex}-${itemIndex}`
-        itemTitle.className = "mb-1"
-        itemTitle.textContent = item.name
-
-        const itemDesc = document.createElement("p")
-        itemDesc.className = "text-muted mb-0"
-        itemDesc.textContent = item.desc
-
-        cardInfo.appendChild(itemTitle)
-        cardInfo.appendChild(itemDesc)
-
-        const actionsDiv = document.createElement("div")
-        actionsDiv.className = "api-actions mt-auto"
-
-        const getBtn = document.createElement("button")
-        getBtn.type = "button"
-        getBtn.className = "btn get-api-btn btn-sm"
-        getBtn.innerHTML = '<i class="fas fa-code me-1" aria-hidden="true"></i> GET'
-        getBtn.dataset.apiPath = item.path
-        getBtn.dataset.apiName = item.name
-        getBtn.dataset.apiDesc = item.desc
-        if (item.params) getBtn.dataset.apiParams = JSON.stringify(item.params)
-        if (item.innerDesc) getBtn.dataset.apiInnerDesc = item.innerDesc
-        getBtn.setAttribute("aria-label", `Get details for ${item.name}`)
-
-        const status = item.status || "ready"
-        const statusConfig = {
-          ready: { class: "status-ready", icon: "fa-circle", text: "Ready" },
-          error: { class: "status-error", icon: "fa-exclamation-triangle", text: "Error" },
-          update: { class: "status-update", icon: "fa-arrow-up", text: "Update" },
+        const sortedItems = category.items.sort((a, b) => a.name.localeCompare(b.name));
+        
+        const categorySection = document.createElement('section');
+        categorySection.id = `category-${category.name.toLowerCase().replace(/\s+/g, '-')}`;
+        categorySection.className = 'category-section';
+        categorySection.style.animationDelay = `${categoryIndex * 0.15}s`;
+        categorySection.setAttribute('aria-labelledby', `category-title-${categoryIndex}`);
+        
+        const categoryHeader = document.createElement('h3');
+        categoryHeader.id = `category-title-${categoryIndex}`;
+        categoryHeader.className = 'category-header';
+        
+        if (category.icon) {
+            const iconEl = document.createElement('i');
+            iconEl.className = `${category.icon} me-2`;
+            iconEl.setAttribute('aria-hidden', 'true');
+            categoryHeader.appendChild(iconEl);
         }
-        const currentStatus = statusConfig[status] || statusConfig.ready
-
-        if (status === "error" || status === "update") {
-          getBtn.disabled = true
-          apiCard.classList.add("api-card-unavailable")
-          getBtn.title = `This API is in '${status}' status, temporarily unavailable.`
+        categoryHeader.appendChild(document.createTextNode(category.name));
+        categorySection.appendChild(categoryHeader);
+        
+        if (category.image) {
+            const img = document.createElement('img');
+            img.src = category.image;
+            img.alt = `${category.name} banner`;
+            img.className = 'category-image img-fluid rounded mb-3 shadow-sm';
+            img.loading = 'lazy';
+            categorySection.appendChild(img);
         }
 
-        const statusIndicator = document.createElement("div")
-        statusIndicator.className = `api-status ${currentStatus.class}`
-        statusIndicator.title = `Status: ${currentStatus.text}`
-        statusIndicator.innerHTML = `<i class="fas ${currentStatus.icon} me-1" aria-hidden="true"></i><span>${currentStatus.text}</span>`
+        const itemsRow = document.createElement('div');
+        itemsRow.className = 'row';
+        
+        sortedItems.forEach((item, itemIndex) => {
+            const itemCol = document.createElement('div');
+            itemCol.className = 'col-12 col-md-6 col-lg-4 api-item';
+            itemCol.dataset.name = item.name;
+            itemCol.dataset.desc = item.desc;
+            itemCol.dataset.category = category.name;
+            itemCol.style.animationDelay = `${itemIndex * 0.05 + 0.2}s`;
 
-        actionsDiv.appendChild(getBtn)
-        actionsDiv.appendChild(statusIndicator)
+            const apiCard = document.createElement('article');
+            apiCard.className = 'api-card h-100';
+            apiCard.setAttribute('aria-labelledby', `api-title-${categoryIndex}-${itemIndex}`);
 
-        apiCard.appendChild(cardInfo)
-        apiCard.appendChild(actionsDiv)
-        itemCol.appendChild(apiCard)
-        itemsRow.appendChild(itemCol)
-      })
+            const cardInfo = document.createElement('div');
+            cardInfo.className = 'api-card-info';
 
-      categorySection.appendChild(itemsRow)
-      DOM.apiContent.appendChild(categorySection)
-    })
-    initializeTooltips()
-  }
+            const itemTitle = document.createElement('h5');
+            itemTitle.id = `api-title-${categoryIndex}-${itemIndex}`;
+            itemTitle.className = 'mb-1';
+            itemTitle.textContent = item.name;
+            
+            const itemDesc = document.createElement('p');
+            itemDesc.className = 'text-muted mb-0';
+            itemDesc.textContent = item.desc;
+            
+            cardInfo.appendChild(itemTitle);
+            cardInfo.appendChild(itemDesc);
+            
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'api-actions mt-auto';
+            
+            const getBtn = document.createElement('button');
+            getBtn.type = 'button';
+            getBtn.className = 'btn get-api-btn btn-sm';
+            getBtn.innerHTML = '<i class="fas fa-code me-1" aria-hidden="true"></i> GET';
+            getBtn.dataset.apiPath = item.path;
+            getBtn.dataset.apiName = item.name;
+            getBtn.dataset.apiDesc = item.desc;
+            if (item.params) getBtn.dataset.apiParams = JSON.stringify(item.params);
+            if (item.innerDesc) getBtn.dataset.apiInnerDesc = item.innerDesc;
+            getBtn.setAttribute('aria-label', `Dapatkan detail untuk ${item.name}`);
+            
+            const status = item.status || "ready";
+            const statusConfig = {
+                ready: { class: "status-ready", icon: "fa-circle", text: "Ready" },
+                error: { class: "status-error", icon: "fa-exclamation-triangle", text: "Error" },
+                update: { class: "status-update", icon: "fa-arrow-up", text: "Update" }
+            };
+            const currentStatus = statusConfig[status] || statusConfig.ready;
+
+            if (status === 'error' || status === 'update') {
+                getBtn.disabled = true;
+                apiCard.classList.add('api-card-unavailable');
+                getBtn.title = `API ini sedang dalam status '${status}', sementara tidak dapat digunakan.`;
+            }
+
+            const statusIndicator = document.createElement('div');
+            statusIndicator.className = `api-status ${currentStatus.class}`;
+            statusIndicator.title = `Status: ${currentStatus.text}`;
+            statusIndicator.innerHTML = `<i class="fas ${currentStatus.icon} me-1" aria-hidden="true"></i><span>${currentStatus.text}</span>`;
+            
+            actionsDiv.appendChild(getBtn);
+            actionsDiv.appendChild(statusIndicator);
+            
+            apiCard.appendChild(cardInfo);
+            apiCard.appendChild(actionsDiv);
+            itemCol.appendChild(apiCard);
+            itemsRow.appendChild(itemCol);
+        });
+        
+        categorySection.appendChild(itemsRow);
+        DOM.apiContent.appendChild(categorySection);
+    });
+    initializeTooltips();
+};
 
   const displayErrorState = (message) => {
     if (!DOM.apiContent) return
@@ -975,214 +975,120 @@ document.addEventListener("DOMContentLoaded", async () => {
     DOM.modal.instance.show()
   }
 
-  const setupModalForApi = (apiData) => {
-    DOM.modal.label.textContent = apiData.name
-    DOM.modal.desc.textContent = apiData.desc
-    DOM.modal.content.innerHTML = ""
-    DOM.modal.endpoint.textContent = `${window.location.origin}${apiData.path.split("?")[0]}`
+const setupModalForApi = (apiData) => {
+    DOM.modal.label.textContent = apiData.name;
+    DOM.modal.desc.textContent = apiData.desc;
+    DOM.modal.content.innerHTML = '';
+    DOM.modal.endpoint.textContent = `${window.location.origin}${apiData.path.split('?')[0]}`;
+    
+    DOM.modal.spinner.classList.add('d-none');
+    DOM.modal.content.classList.add('d-none');
+    DOM.modal.container.classList.add('d-none');
+    DOM.modal.endpoint.classList.remove('d-none');
 
-    DOM.modal.spinner.classList.add("d-none")
-    DOM.modal.content.classList.add("d-none")
-    DOM.modal.container.classList.add("d-none")
-    DOM.modal.endpoint.classList.remove("d-none")
+    DOM.modal.queryInputContainer.innerHTML = '';
+    DOM.modal.submitBtn.classList.add('d-none');
+    DOM.modal.submitBtn.disabled = true;
+    DOM.modal.submitBtn.innerHTML = '<span>Send</span><i class="fas fa-paper-plane ms-2" aria-hidden="true"></i>';
 
-    DOM.modal.queryInputContainer.innerHTML = ""
-    DOM.modal.submitBtn.classList.add("d-none")
-    DOM.modal.submitBtn.disabled = true
-    DOM.modal.submitBtn.innerHTML = '<span>Send</span><i class="fas fa-paper-plane ms-2" aria-hidden="true"></i>'
-
-    const downloadImageBtn = DOM.modal.element.querySelector(".download-image-btn")
-    const downloadVideoBtn = DOM.modal.element.querySelector(".download-video-btn")
-    const shareApiBtn = DOM.modal.element.querySelector(".share-api-btn")
-    if (downloadImageBtn) downloadImageBtn.style.display = "none"
-    if (downloadVideoBtn) downloadVideoBtn.style.display = "none"
-    if (shareApiBtn) shareApiBtn.style.display = "none"
-
-    if (!shareApiBtn) {
-      const newShareBtn = document.createElement("button")
-      newShareBtn.className = "btn btn-info me-2 share-api-btn"
-      newShareBtn.innerHTML = '<i class="fas fa-share-alt me-2"></i> Share API'
-      newShareBtn.onclick = handleShareApi
-
-      const modalFooter = DOM.modal.element.querySelector(".modal-footer")
-      modalFooter.insertBefore(newShareBtn, DOM.modal.submitBtn)
-    }
-
-    const shareBtn = DOM.modal.element.querySelector(".share-api-btn")
-    if (shareBtn) shareBtn.style.display = "inline-block"
-
-    const paramsFromPath = new URLSearchParams(apiData.path.split("?")[1])
-    const paramKeys = Array.from(paramsFromPath.keys())
+    const paramsFromPath = new URLSearchParams(apiData.path.split('?')[1]);
+    const paramKeys = Array.from(paramsFromPath.keys());
 
     if (paramKeys.length > 0) {
-      const paramContainer = document.createElement("div")
-      paramContainer.className = "param-container"
+        const paramContainer = document.createElement('div');
+        paramContainer.className = 'param-container';
 
-      const formTitle = document.createElement("h6")
-      formTitle.className = "param-form-title"
-      formTitle.innerHTML = '<i class="fas fa-sliders-h me-2" aria-hidden="true"></i> Parameters'
-      paramContainer.appendChild(formTitle)
+        const formTitle = document.createElement('h6');
+        formTitle.className = 'param-form-title';
+        formTitle.innerHTML = '<i class="fas fa-sliders-h me-2" aria-hidden="true"></i> Parameter';
+        paramContainer.appendChild(formTitle);
 
-      if (settings.apiSettings?.requireApikey) {
-        const apikeyGroup = document.createElement("div")
-        apikeyGroup.className = "param-group mb-3"
+        paramKeys.forEach(paramKey => {
+            const paramGroup = document.createElement('div');
+            paramGroup.className = 'param-group mb-3';
 
-        const apikeyLabelContainer = document.createElement("div")
-        apikeyLabelContainer.className = "param-label-container"
+            const labelContainer = document.createElement('div');
+            labelContainer.className = 'param-label-container';
+            
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.textContent = paramKey;
+            label.htmlFor = `param-${paramKey}`;
+            
+            const requiredSpan = document.createElement('span');
+            requiredSpan.className = 'required-indicator ms-1';
+            requiredSpan.textContent = '*';
+            label.appendChild(requiredSpan);
+            labelContainer.appendChild(label);
 
-        const apikeyLabel = document.createElement("label")
-        apikeyLabel.className = "form-label"
-        apikeyLabel.textContent = "apikey"
-        apikeyLabel.htmlFor = "param-apikey"
+            if (apiData.params && apiData.params[paramKey]) {
+                const tooltipIcon = document.createElement('i');
+                tooltipIcon.className = 'fas fa-info-circle param-info ms-1';
+                tooltipIcon.setAttribute('data-bs-toggle', 'tooltip');
+                tooltipIcon.setAttribute('data-bs-placement', 'top');
+                
+                let tooltipText = '';
+                if (typeof apiData.params[paramKey] === 'object') {
+                    tooltipText = apiData.params[paramKey].info || apiData.params[paramKey];
+                } else {
+                    tooltipText = apiData.params[paramKey];
+                }
+                tooltipIcon.title = tooltipText;
+                labelContainer.appendChild(tooltipIcon);
+            }
+            paramGroup.appendChild(labelContainer);
+            
+            const inputContainer = document.createElement('div');
+            inputContainer.className = 'input-container';
+            const inputField = document.createElement('input');
+            inputField.type = 'text';
+            inputField.className = 'form-control custom-input';
+            inputField.id = `param-${paramKey}`;
+            
+            if (apiData.params && apiData.params[paramKey]) {
+                let placeholder = `Masukkan ${paramKey}...`;
+                if (typeof apiData.params[paramKey] === 'object' && apiData.params[paramKey].example) {
+                    placeholder = `Contoh: ${apiData.params[paramKey].example}`;
+                }
+                inputField.placeholder = placeholder;
+            } else {
+                inputField.placeholder = `Masukkan ${paramKey}...`;
+            }
+            
+            inputField.dataset.param = paramKey;
+            inputField.required = true;
+            inputField.autocomplete = "off";
+            
+            const paramValue = paramsFromPath.get(paramKey);
+            if (paramValue) {
+                inputField.value = decodeURIComponent(paramValue);
+            } else if (apiData.params && apiData.params[paramKey]) {
+                if (typeof apiData.params[paramKey] === 'object' && apiData.params[paramKey].example) {
+                    inputField.value = apiData.params[paramKey].example;
+                }
+            }
+            
+            inputField.addEventListener('input', validateModalInputs);
+            inputContainer.appendChild(inputField);
+            paramGroup.appendChild(inputContainer);
+            paramContainer.appendChild(paramGroup);
+        });
 
-        const apikeyRequiredSpan = document.createElement("span")
-        apikeyRequiredSpan.className = "required-indicator ms-1"
-        apikeyRequiredSpan.textContent = "*"
-        apikeyLabel.appendChild(apikeyRequiredSpan)
-        apikeyLabelContainer.appendChild(apikeyLabel)
-
-        const apikeyTooltipIcon = document.createElement("i")
-        apikeyTooltipIcon.className = "fas fa-info-circle param-info ms-1"
-        apikeyTooltipIcon.setAttribute("data-bs-toggle", "tooltip")
-        apikeyTooltipIcon.setAttribute("data-bs-placement", "top")
-        apikeyTooltipIcon.title = "API key required for this endpoint"
-        apikeyLabelContainer.appendChild(apikeyTooltipIcon)
-
-        apikeyGroup.appendChild(apikeyLabelContainer)
-
-        const apikeyInputContainer = document.createElement("div")
-        apikeyInputContainer.className = "input-container"
-        const apikeyInputField = document.createElement("input")
-        apikeyInputField.type = "text"
-        apikeyInputField.className = "form-control custom-input"
-        apikeyInputField.id = "param-apikey"
-        apikeyInputField.placeholder = "Enter API key..."
-        apikeyInputField.dataset.param = "apikey"
-        apikeyInputField.required = true
-        apikeyInputField.autocomplete = "off"
-        apikeyInputField.addEventListener("input", validateModalInputs)
-        apikeyInputContainer.appendChild(apikeyInputField)
-        apikeyGroup.appendChild(apikeyInputContainer)
-        paramContainer.appendChild(apikeyGroup)
-      }
-
-      paramKeys.forEach((paramKey) => {
-        const paramGroup = document.createElement("div")
-        paramGroup.className = "param-group mb-3"
-
-        const labelContainer = document.createElement("div")
-        labelContainer.className = "param-label-container"
-
-        const label = document.createElement("label")
-        label.className = "form-label"
-        label.textContent = paramKey
-        label.htmlFor = `param-${paramKey}`
-
-        const requiredSpan = document.createElement("span")
-        requiredSpan.className = "required-indicator ms-1"
-        requiredSpan.textContent = "*"
-        label.appendChild(requiredSpan)
-        labelContainer.appendChild(label)
-
-        if (apiData.params && apiData.params[paramKey]) {
-          const tooltipIcon = document.createElement("i")
-          tooltipIcon.className = "fas fa-info-circle param-info ms-1"
-          tooltipIcon.setAttribute("data-bs-toggle", "tooltip")
-          tooltipIcon.setAttribute("data-bs-placement", "top")
-          tooltipIcon.title = apiData.params[paramKey]
-          labelContainer.appendChild(tooltipIcon)
+        if (apiData.innerDesc) {
+            const innerDescDiv = document.createElement('div');
+            innerDescDiv.className = 'inner-desc mt-3';
+            innerDescDiv.innerHTML = `<i class="fas fa-info-circle me-2" aria-hidden="true"></i> ${apiData.innerDesc.replace(/\n/g, '<br>')}`;
+            paramContainer.appendChild(innerDescDiv);
         }
-        paramGroup.appendChild(labelContainer)
 
-        const inputContainer = document.createElement("div")
-        inputContainer.className = "input-container"
-        const inputField = document.createElement("input")
-        inputField.type = "text"
-        inputField.className = "form-control custom-input"
-        inputField.id = `param-${paramKey}`
-        inputField.placeholder = `Enter ${paramKey}...`
-        inputField.dataset.param = paramKey
-        inputField.required = true
-        inputField.autocomplete = "off"
-        inputField.addEventListener("input", validateModalInputs)
-        inputContainer.appendChild(inputField)
-        paramGroup.appendChild(inputContainer)
-        paramContainer.appendChild(paramGroup)
-      })
-
-      if (apiData.innerDesc) {
-        const innerDescDiv = document.createElement("div")
-        innerDescDiv.className = "inner-desc mt-3"
-        innerDescDiv.innerHTML = `<i class="fas fa-info-circle me-2" aria-hidden="true"></i> ${apiData.innerDesc.replace(/\n/g, "<br>")}`
-        paramContainer.appendChild(innerDescDiv)
-      }
-
-      DOM.modal.queryInputContainer.appendChild(paramContainer)
-      DOM.modal.submitBtn.classList.remove("d-none")
-      DOM.modal.submitBtn.disabled = true
-      DOM.modal.submitBtn.innerHTML = '<span>Send</span><i class="fas fa-paper-plane ms-2" aria-hidden="true"></i>'
-
-      initializeTooltips(DOM.modal.queryInputContainer)
-    } else if (settings.apiSettings?.requireApikey) {
-      const paramContainer = document.createElement("div")
-      paramContainer.className = "param-container"
-
-      const formTitle = document.createElement("h6")
-      formTitle.className = "param-form-title"
-      formTitle.innerHTML = '<i class="fas fa-key me-2" aria-hidden="true"></i> API Key Required'
-      paramContainer.appendChild(formTitle)
-
-      const apikeyGroup = document.createElement("div")
-      apikeyGroup.className = "param-group mb-3"
-
-      const apikeyLabelContainer = document.createElement("div")
-      apikeyLabelContainer.className = "param-label-container"
-
-      const apikeyLabel = document.createElement("label")
-      apikeyLabel.className = "form-label"
-      apikeyLabel.textContent = "apikey"
-      apikeyLabel.htmlFor = "param-apikey"
-
-      const apikeyRequiredSpan = document.createElement("span")
-      apikeyRequiredSpan.className = "required-indicator ms-1"
-      apikeyRequiredSpan.textContent = "*"
-      apikeyLabel.appendChild(apikeyRequiredSpan)
-      apikeyLabelContainer.appendChild(apikeyLabel)
-
-      const apikeyTooltipIcon = document.createElement("i")
-      apikeyTooltipIcon.className = "fas fa-info-circle param-info ms-1"
-      apikeyTooltipIcon.setAttribute("data-bs-toggle", "tooltip")
-      apikeyTooltipIcon.setAttribute("data-bs-placement", "top")
-      apikeyTooltipIcon.title = "API key required for this endpoint"
-      apikeyLabelContainer.appendChild(apikeyTooltipIcon)
-
-      apikeyGroup.appendChild(apikeyLabelContainer)
-
-      const apikeyInputContainer = document.createElement("div")
-      apikeyInputContainer.className = "input-container"
-      const apikeyInputField = document.createElement("input")
-      apikeyInputField.type = "text"
-      apikeyInputField.className = "form-control custom-input"
-      apikeyInputField.id = "param-apikey"
-      apikeyInputField.placeholder = "Enter API key..."
-      apikeyInputField.dataset.param = "apikey"
-      apikeyInputField.required = true
-      apikeyInputField.autocomplete = "off"
-      apikeyInputField.addEventListener("input", validateModalInputs)
-      apikeyInputContainer.appendChild(apikeyInputField)
-      apikeyGroup.appendChild(apikeyInputContainer)
-      paramContainer.appendChild(apikeyGroup)
-
-      DOM.modal.queryInputContainer.appendChild(paramContainer)
-      DOM.modal.submitBtn.classList.remove("d-none")
-      DOM.modal.submitBtn.disabled = true
-      DOM.modal.submitBtn.innerHTML = '<span>Send</span><i class="fas fa-paper-plane ms-2" aria-hidden="true"></i>'
-
-      initializeTooltips(DOM.modal.queryInputContainer)
+        DOM.modal.queryInputContainer.appendChild(paramContainer);
+        DOM.modal.submitBtn.classList.remove('d-none');
+        validateModalInputs();
+        initializeTooltips(DOM.modal.queryInputContainer);
     } else {
-      handleApiRequest(`${window.location.origin}${apiData.path}`, apiData.name)
+        handleApiRequest(`${window.location.origin}${apiData.path}`, apiData.name);
     }
-  }
+};
 
   const validateModalInputs = () => {
     const inputs = DOM.modal.queryInputContainer.querySelectorAll("input[required]")
