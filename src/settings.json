@@ -86,6 +86,32 @@
           "params": {
             "text": "Text to be inserted into the BRAT video (required)"
           }
+        },
+        {
+          "name": "Fake KTP Generator",
+          "desc": "Generate realistic fake KTP Indonesia with custom data, photo, and full layout.",
+          "path": "/v1/maker/fake-ktp?nama=JOHN%20DOE&provinsi=DKI%20JAKARTA&kota=JAKARTA%20SELATAN&nik=3174012345678901&ttl=JAKARTA,01-01-1990&jenis_kelamin=LAKI-LAKI&golongan_darah=O&alamat=JL.%20SUDIRMAN%20NO.%20123&rtRw=001/002&kel_desa=KEBAYORAN%20BARU&kecamatan=KEBAYORAN%20BARU&agama=ISLAM&status=BELUM%20KAWIN&pekerjaan=KARYAWAN%20SWASTA&kewarganegaraan=WNI&masa_berlaku=SEUMUR%20HIDUP&terbuat=01-01-2020&pas_photo=https://cdn.ditss.biz.id/3Bcv.jpg",
+          "status": "ready",
+          "params": {
+            "nama": "Nama lengkap pemilik KTP (required)",
+            "provinsi": "Nama provinsi",
+            "kota": "Nama kota / kabupaten",
+            "nik": "16 digit Nomor Induk Kependudukan",
+            "ttl": "Tempat lahir dan tanggal lahir. Contoh: JAKARTA,01-01-1990",
+            "jenis_kelamin": "LAKI-LAKI atau PEREMPUAN",
+            "golongan_darah": "Golongan darah: O, A, B, AB",
+            "alamat": "Alamat lengkap",
+            "rtRw": "Format: RT/RW (contoh: 001/002)",
+            "kel_desa": "Kelurahan / desa",
+            "kecamatan": "Kecamatan",
+            "agama": "Agama pemilik KTP",
+            "status": "Status perkawinan (BELUM KAWIN, KAWIN, CERAI)",
+            "pekerjaan": "Pekerjaan pemilik KTP",
+            "kewarganegaraan": "Biasanya WNI",
+            "masa_berlaku": "Contoh: SEUMUR HIDUP",
+            "terbuat": "Tanggal pembuatan: 01-01-2020",
+            "pas_photo": "URL foto pemilik KTP (required)"
+          }
         }
       ]
     },
