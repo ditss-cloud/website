@@ -84,7 +84,7 @@ async function ktpgen(params) {
     ctx.fillText(params.nik, 170, 105);
     
     ctx.font = '16px ArrialKTP';
-    ctx.fillText(upper(params.nama), 190, 147); //145
+    ctx.fillText(upper(params.nama), 190, 149); //145
     ctx.fillText(upper(params.ttl), 190, 168);
     ctx.fillText(upper(params.jenis_kelamin), 190, 191);
     ctx.fillText(upper(params.golongan_darah || '-'), 463, 190);
