@@ -1301,7 +1301,7 @@ const setupModalForApi = (apiData) => {
 
     try {
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 20000)
+      const timeoutId = setTimeout(() => controller.abort(), 180000)
 
       const response = await fetch(apiUrl, { signal: controller.signal })
       clearTimeout(timeoutId)
