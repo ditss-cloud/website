@@ -73,7 +73,7 @@
         {
           "name": "BRAT Generator",
           "desc": "Generate BRAT-style text images with customizable colors and backgrounds",
-          "path": "/v1/maker/brat?text=Hello World",
+          "path": "/v1/maker/brat?text=malam malam ngisep kontol namaku Jefri Nichol",
           "status": "ready",
           "params": {
             "text": "Text to be inserted into the BRAT image (required)"
@@ -82,7 +82,7 @@
         {
           "name": "BRAT Video Generator",
           "desc": "Generate animated BRAT-style text videos with customizable colors and backgrounds",
-          "path": "/v1/maker/bratvid?text=Hello World",
+          "path": "/v1/maker/bratvid?text=malam malam ngisep kontol namaku Jefri Nichol",
           "status": "ready",
           "params": {
             "text": "Text to be inserted into the BRAT video (required)"
@@ -91,7 +91,7 @@
         {
           "name": "iPhone chat",
           "desc": "Generate iPhone chat WhatsApp",
-          "path": "/v1/maker/imessage?text=Hello World",
+          "path": "/v1/maker/imessage?text=malam malam ngisep kontol namaku Jefri Nichol",
           "status": "ready",
           "params": {
             "text": "Text to be inserted into the BRAT video (required)"
@@ -180,7 +180,7 @@
         {
           "name": "Pak Ustadz Generator",
           "desc": "Generate Islamic quote images with Pak Ustadz style (Type 1)",
-          "path": "/v1/maker/pakustadz?teks=Assalamualaikum",
+          "path": "/v1/maker/pakustadz?teks=malam malam ngisep kontol namaku Jefri Nichol",
           "status": "ready",
           "params": {
             "teks": {
@@ -192,7 +192,7 @@
         {
           "name": "Pak Ustadz Generator V2",
           "desc": "Generate Islamic quote images with Pak Ustadz style (Type 2)",
-          "path": "/v2/maker/pakustadz?teks=Assalamualaikum",
+          "path": "/v2/maker/pakustadz?teks=malam malam ngisep kontol namaku Jefri Nichol",
           "status": "ready", 
           "params": {
             "teks": {
