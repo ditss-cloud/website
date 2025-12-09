@@ -53,6 +53,16 @@
             "url": "URL of the image to be edited (required)",
             "prompt": "Instructions for how the image should be modified (required)"
           }
+        },
+        {
+          "name": "Unrestricted AI Generator",
+          "desc": "Generate any type of image using AI with custom prompts and styles",
+          "path": "/v1/ai/unrestricted?prompt=girl%20wearing%20glasses&style=anime",
+          "status": "active",
+          "params": {
+            "prompt": "The description of the image you want the AI to generate (required)",
+            "style": "photorealistic, digital-art, impressionist, anime, fantasy, sci-fi, vintage"
+          }
         }
       ]
     },
