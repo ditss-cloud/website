@@ -1,4 +1,150 @@
-import axios from "axios"
+// src/api/tiktok/tiktok.js
+import axios from "axios";
+import * as cheerio from 'cheerio'
+import { getRandomUA } from "../../../src/utils/userAgen.js";
+import { createApiKeyMiddleware } from "../../middleware/apikey.js";
+
+// ============ TT SEARCH ============
+const ttSearch = async (query) => {
+  try {
+    const d = new URLSearchParams();
+    d.append("keywords", query);
+    d.append("count", "15");
+    d.append("cursor", "0");
+    d.append("web", "1");
+    d.append("hd", "1");
+
+    const { data } = await axios.post("https://tikwm.com/api/feed/search", d, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+
+    const baseURL = "https://tikwm.com";
+    const videos = data.data.videos.map(video => ({
+      ...video,
+      play: baseURL + video.play,
+      wmplay: baseURL + video.wmplay,
+      music: baseURL + video.music,
+      cover: baseURL + video.cover,
+      avatar: baseURL + video.avatar
+    }));
+
+    return videos;
+  } catch (e) {
+    throw e; // lempar error asli
+  }
+};
+
+// ============ TIKTOK DL (ttsave.app) ============
+const headers = {
+  "authority": "ttsave.app",
+  "accept": "application/json, text/plain, */*",
+  "origin": "https://ttsave.app",
+  "referer": "https://ttsave.app/en",
+  "user-agent": "Postify/1.0.0",
+};
+
+const tiktokdl = {
+  submit: async function(url, referer) {
+    const headerx = { ...headers, referer };
+    const data = { "query": url, "language_id": "1" };
+    return axios.post('https://ttsave.app/download', data, { headers: headerx });
+  },
+
+  parse: function($) {
+    const description = $('p.text-gray-600').text().trim();
+    const dlink = {
+      nowm: $('a.w-full.text-white.font-bold').first().attr('href'),
+      audio: $('a[type="audio"]').attr('href'),
+    };
+
+    const slides = $('a[type="slide"]').map((i, el) => ({
+      number: i + 1,
+      url: $(el).attr('href')
+    })).get();
+
+    return { description, dlink, slides };
+  },
+
+  fetchData: async function(link) {
+    try {
+      const response = await this.submit(link, 'https://ttsave.app/en');
+      const $ = cheerio.load(response.data);
+      const result = this.parse($);
+      return {
+        video_nowm: result.dlink.nowm,
+        audio_url: result.dlink.audio,
+        slides: result.slides,
+        description: result.description
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+};
+
+// ============ TIKTOK DL V2 (tikwm.com) ============
+const tiktok = async (query) => {
+  const encodedParams = new URLSearchParams();
+  encodedParams.set("url", query);
+  encodedParams.set("hd", "1");
+
+  const response = await axios({
+    method: "POST",
+    url: "https://tikwm.com/api/",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "Cookie": "current_language=en",
+      "User-Agent": getRandomUA()
+    },
+    data: encodedParams,
+  });
+  return response.data;
+};
+
+// ============ EXPRESS HANDLER ============
+export default (app) => {
+  // 🔍 Search
+  app.get("/v1/search/tiktok", createApiKeyMiddleware(), async (req, res) => {
+    const { q } = req.query;
+    if (!q) return res.json({ status: false, error: 'Query is required' });
+    try {
+      const results = await ttSearch(q);
+      res.status(200).json({ status: true, result: results });
+    } catch (error) {
+      res.status(500).send(`Error: ${error.message}`);
+    }
+  });
+
+  // 📥 Download V1 (ttsave)
+  app.get("/v2/download/tiktok", createApiKeyMiddleware(), async (req, res) => {
+    const { url } = req.query;
+    if (!url) return res.json({ status: false, error: 'Url is required' });
+    try {
+      const results = await tiktokdl.fetchData(url);
+      res.status(200).json({ status: true, result: results });
+    } catch (error) {
+      res.status(500).send(`Error: ${error.message}`);
+    }
+  });
+
+  // 📥 Download V2 (tikwm)
+  app.get("/v1/downloader/tiktok", createApiKeyMiddleware(), async (req, res) => {
+    const { url } = req.query;
+    if (!url) return res.json({ status: false, error: 'Url is required' });
+    try {
+      const results = await tiktok(url);
+      res.status(200).json({ status: true, result: results });
+    } catch (error) {
+      res.status(500).send(`Error: ${error.message}`);
+    }
+  });
+};
+
+
+
+/*import axios from "axios"
 import * as cheerio from "cheerio"
 import FormData from "form-data"
 import * as tough from "tough-cookie"
@@ -54,7 +200,7 @@ export default (app) => {
         headers: {
           ...form.getHeaders(),
           "authority": "snaptik.app",
-          "accept": "*/*",
+          "accept": "/*",
           "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
           "origin": "https://snaptik.app",
           "referer": "https://snaptik.app/en2",
@@ -295,4 +441,4 @@ export default (app) => {
       })
     }
   })
-}
+}*/
