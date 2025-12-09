@@ -8,12 +8,12 @@
   "description": "aplikasi api",
   "icons": [
     {
-      "src": "https://cdn.asuma.my.id/o8v8wq8x12.jpg",
+      "src": "/src/images/icon.webp",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://cdn.asuma.my.id/zjsvcos194.jpg",
+      "src": "/src/images/icon.webp",
       "sizes": "512x512",
       "type": "image/png"
     }
