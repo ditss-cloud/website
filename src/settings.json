@@ -43,6 +43,16 @@
           "params": {
             "url": "URL gambar yang akan diperiksa"
           }
+        },
+        {
+          "name": "AI Image Editor",
+          "desc": "Edit or transform images using AI with custom prompts (change style, objects, clothing, colors, etc.)",
+          "path": "/v1/ai/imgeditor?url=https://cdn.ditss.biz.id/3Bcv.jpg&prompt=change%20to%20formal%20suit",
+          "status": "active",
+          "params": {
+            "url": "URL of the image to be edited (required)",
+            "prompt": "Instructions for how the image should be modified (required)"
+          }
         }
       ]
     },
