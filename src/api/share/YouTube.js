@@ -17,7 +17,7 @@ async function searchYouTube(query) {
       throw new Error("No results found");
     }
 
-    return results.all.slice(0, 20).map(item => ({
+    return results.all.slice(0, 200).map(item => ({
       id: item.videoId,
       title: item.title,
       description: item.description || "",
