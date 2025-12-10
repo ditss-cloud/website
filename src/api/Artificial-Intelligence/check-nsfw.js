@@ -3,6 +3,220 @@ import FormData from 'form-data';
 import multer from 'multer';
 import { createApiKeyMiddleware } from '../../middleware/apikey.js';
 
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowed.includes(file.mimetype)) cb(null, true);
+    else cb(new Error('Only JPEG, PNG, GIF, and WebP are allowed'));
+  }
+});
+
+function formatResponseTime(ms) {
+  return `${Math.round(ms)}ms`;
+}
+
+function sendResponse(req, res, statusCode, data, version = 'v1') {
+  const responseTime = Date.now() - req.startTime;
+  const requestId =
+    req.headers['x-vercel-id'] ||
+    req.headers['x-request-id'] ||
+    `asuma-${Date.now()}`;
+
+  const response = {
+    status: statusCode === 200 || statusCode === 201,
+    version,
+    creator: 'DitssGanteng',
+    requestId,
+    responseTime: formatResponseTime(responseTime),
+    ...data
+  };
+
+  res.status(statusCode).json(response);
+}
+
+async function checkNSFW(buffer) {
+  const form = new FormData();
+  form.append('file', buffer, `${Date.now()}.jpg`);
+
+  const { data } = await axios.post(
+    'https://www.nyckel.com/v1/functions/o2f0jzcdyut2qxhu/invoke',
+    form,
+    { headers: form.getHeaders() }
+  );
+
+  return data;
+}
+
+function formatResult(originalResult) {
+  if (originalResult.label && originalResult.confidence !== undefined) {
+    return {
+      label: originalResult.label,
+      confidence: parseFloat(originalResult.confidence.toFixed(4)),
+      isPorn: originalResult.label.toLowerCase() === 'porn'
+    };
+  }
+
+  if (originalResult.labelName && originalResult.confidence !== undefined) {
+    return {
+      label: originalResult.labelName,
+      confidence: parseFloat(originalResult.confidence.toFixed(4)),
+      isPorn: originalResult.labelName.toLowerCase() === 'porn'
+    };
+  }
+
+  if (Array.isArray(originalResult) && originalResult.length > 0) {
+    const first = originalResult[0];
+    const label = first.labelName || first.label || 'Unknown';
+    const confidence = first.confidence
+      ? parseFloat(first.confidence.toFixed(4))
+      : 0;
+    return {
+      label,
+      confidence,
+      isPorn: label.toLowerCase() === 'porn'
+    };
+  }
+
+  return originalResult;
+}
+
+export default function (app) {
+  app.use('/v1/ai/nsfwchecker', (req, res, next) => {
+    req.startTime = Date.now();
+    next();
+  });
+
+  app.use('/v2/ai/nsfwchecker', (req, res, next) => {
+    req.startTime = Date.now();
+    next();
+  });
+
+  app.use('/ai/nsfwchecker/info', (req, res, next) => {
+    req.startTime = Date.now();
+    next();
+  });
+
+  app.get('/v1/ai/nsfwchecker', createApiKeyMiddleware(), async (req, res) => {
+    try {
+      const { url } = req.query;
+      if (!url)
+        return sendResponse(
+          req,
+          res,
+          400,
+          { error: 'Image URL is required' },
+          'v1'
+        );
+
+      const imgRes = await axios({
+        url,
+        responseType: 'arraybuffer',
+        timeout: 10000
+      });
+
+      const buffer = Buffer.from(imgRes.data);
+      const originalResult = await checkNSFW(buffer);
+      const formattedResult = formatResult(originalResult);
+
+      return sendResponse(req, res, 200, { result: formattedResult }, 'v1');
+    } catch (error) {
+      return sendResponse(
+        req,
+        res,
+        400,
+        { error: error.message || 'Failed to check image' },
+        'v1'
+      );
+    }
+  });
+
+  app.post(
+    '/v2/ai/nsfwchecker',
+    createApiKeyMiddleware(),
+    upload.single('file'),
+    async (req, res) => {
+      try {
+        if (!req.file)
+          return sendResponse(
+            req,
+            res,
+            400,
+            { error: 'No file uploaded. Use multipart/form-data with field "file"' },
+            'v2'
+          );
+
+        const buffer = req.file.buffer;
+        const originalResult = await checkNSFW(buffer);
+        const formattedResult = formatResult(originalResult);
+
+        return sendResponse(
+          req,
+          res,
+          200,
+          {
+            result: formattedResult,
+            fileInfo: {
+              originalname: req.file.originalname,
+              mimetype: req.file.mimetype,
+              size: `${Math.round(req.file.size / 1024)}KB`
+            }
+          },
+          'v2'
+        );
+      } catch (error) {
+        return sendResponse(
+          req,
+          res,
+          400,
+          { error: error.message || 'Failed to check uploaded image' },
+          'v2'
+        );
+      }
+    }
+  );
+
+  app.get('/ai/nsfwchecker/info', (req, res) => {
+    return sendResponse(req, res, 200, {
+      endpoints: {
+        v1_get: 'GET /v1/ai/nsfwchecker?url=IMAGE_URL',
+        v2_post: 'POST /v2/ai/nsfwchecker (multipart/form-data)'
+      },
+      description: 'NSFW Content Checker API',
+      limits: {
+        maxFileSize: '5MB',
+        allowedFormats: ['JPEG', 'PNG', 'GIF', 'WebP'],
+        rateLimit: 'Depends on your API key'
+      }
+    });
+  });
+
+  app.get('/ai/nsfwchecker/health', (req, res) => {
+    req.startTime = Date.now();
+    return sendResponse(req, res, 200, {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      vercelId: req.headers['x-vercel-id'] || 'Not available'
+    });
+  });
+}
+
+
+
+
+
+
+
+
+
+
+/*import axios from 'axios';
+import FormData from 'form-data';
+import multer from 'multer';
+import { createApiKeyMiddleware } from '../../middleware/apikey.js';
+
 // Setup multer untuk handle file upload
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -201,7 +415,14 @@ export default function (app) {
     });
   });
 }
-/*import axios from 'axios';
+
+
+
+
+
+
+
+import axios from 'axios';
 import FormData from 'form-data';
 import multer from 'multer';
 import { createApiKeyMiddleware } from '../../middleware/apikey.js';
