@@ -105,7 +105,7 @@ async function spotifyDownloader(url) {
             result.lyrics = "Lyrics not available";
         }
 
-        const cdnURL = `https://cdn-spotify-247.zm.io.vn/download/${result.metadata.id}/syaiiganteng?name=${encodeURIComponent(result.metadata.title)}&artist=${encodeURIComponent(result.metadata.artist)}`;
+        const cdnURL = `https://cdn-spotify-247.zm.io.vn/download/${result.metadata.id}/ditssganteng?name=${encodeURIComponent(result.metadata.title)}&artist=${encodeURIComponent(result.metadata.artist)}`;
         result.download = cdnURL;
 
         return result;
