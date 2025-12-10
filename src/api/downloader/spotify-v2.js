@@ -3,14 +3,11 @@ import axios from "axios";
 import { createApiKeyMiddleware } from "../../middleware/apikey.js";
 import { getRandomUA } from "../../../src/utils/userAgen.js";
 
-async function fetchSpotmateResponse(url) {
-    if (!url) throw new Error("URL is required");
-    if (!url.includes('spotify.com')) throw new Error("Invalid URL, please enter a valid Spotify URL");
-
+async function getRawSpotmateResponse(url) {
     const baseURL = "https://spotmate.online";
     const userAgent = getRandomUA();
 
-    // 1. Ambil Token CSRF dari halaman utama
+    // 1. Get CSRF Token
     const getTokenResponse = await axios.get(baseURL, {
         headers: { "User-Agent": userAgent },
     });
@@ -27,7 +24,7 @@ async function fetchSpotmateResponse(url) {
         .map((c) => c.split(";")[0])
         .join("; ");
 
-    // 2. Buat request ke endpoint `/getTrackData` spotmate.online
+    // 2. Request ke spotmate.online
     const headers = {
         "Content-Type": "application/json",
         "X-CSRF-TOKEN": token,
@@ -37,78 +34,37 @@ async function fetchSpotmateResponse(url) {
         "User-Agent": userAgent,
     };
 
-    // Gunakan axios untuk mendapatkan respons asli
-    const trackResponse = await axios.post(
+    const response = await axios.post(
         baseURL + "/getTrackData", 
         { spotify_url: url }, 
         { 
             headers: headers,
-            responseType: 'json' // Jaga format respons
+            // Jangan parse JSON, biarkan raw
+            transformResponse: [data => data]
         }
     );
 
-    // Kembalikan data dan headers dari respons spotmate.online
-    return {
-        status: trackResponse.status,
-        headers: trackResponse.headers,
-        data: trackResponse.data
-    };
+    return response.data; // Ini STRING mentah
 }
 
 export default function (app) {
-    // Endpoint GET
-    app.get('/v2/download/spotify', createApiKeyMiddleware(), async (req, res) => {
+    // ENDPOINT KHUSUS UNTUK LIHAT RESPONS MENTAH
+    app.get('/v1/debug/spotify/raw', createApiKeyMiddleware(), async (req, res) => {
         try {
             const { url } = req.query;
             if (!url) {
-                return res.status(400).json({ 
-                    status: false, 
-                    message: 'URL is required in query parameters'
-                });
+                return res.status(400).send('URL is required');
             }
 
-            // Ambil respons langsung dari spotmate.online
-            const spotmateResponse = await fetchSpotmateResponse(url);
+            // Ambil respons mentah sebagai string
+            const rawResponse = await getRawSpotmateResponse(url);
             
-            // Teruskan status kode, headers, dan data JSON asli
-            res.status(spotmateResponse.status)
-               .set(spotmateResponse.headers)
-               .json(spotmateResponse.data); // [citation:4][citation:7]
+            // Kirim sebagai text plain, biar bisa baca mentah
+            res.set('Content-Type', 'text/plain');
+            res.send(`=== RESPON MENTAH DARI SPOTMATE.ONLINE ===\n\n${rawResponse}`);
 
         } catch (error) {
-            res.status(500).json({ 
-                status: false, 
-                message: 'Failed to fetch from Spotify service',
-                error: error.message 
-            });
+            res.status(500).send(`ERROR: ${error.message}`);
         }
     });
-
-    // Endpoint POST
-    app.post('/v2/download/spotify', createApiKeyMiddleware(), async (req, res) => {
-        try {
-            const { url } = req.body;
-            if (!url) {
-                return res.status(400).json({ 
-                    status: false, 
-                    message: 'URL is required in request body'
-                });
-            }
-
-            // Ambil respons langsung dari spotmate.online
-            const spotmateResponse = await fetchSpotmateResponse(url);
-            
-            // Teruskan respons asli
-            res.status(spotmateResponse.status)
-               .set(spotmateResponse.headers)
-               .json(spotmateResponse.data);
-
-        } catch (error) {
-            res.status(500).json({ 
-                status: false, 
-                message: 'Failed to fetch from Spotify service',
-                error: error.message 
-            });
-        }
-    });
-                                                                      }
+}
