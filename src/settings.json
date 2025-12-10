@@ -386,7 +386,7 @@
           "desc": "Search modded applications in HappyMod",
           "path": "/v1/search/happymod?q=whatsapp",
           "method": "GET",
-          "status": "ready",
+          "status": "update",
           "params": {
             "q": "Application name (required)"
           }
