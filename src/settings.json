@@ -331,6 +331,69 @@
   ]
 },
     {
+      "name": "SEARCH",
+      "items": [
+        {
+          "name": "YouTube Search",
+          "desc": "Search YouTube videos by keywords",
+          "path": "/v1/search/youtube?q=music",
+          "method": "GET",
+          "status": "ready",
+          "params": { "q": "Search keywords (required)" }
+        },
+        {
+          "name": "NPM Package Search & Stalker",
+          "desc": "Search NPM packages or view detailed package information (versions, dependencies, author, etc.)",
+          "path": "/v1/search/npm?q=express",
+          "method": "GET",
+          "status": "ready",
+          "params": {
+            "q": "Search keywords (for search mode)",
+            "name": "Specific package name (for stalk mode)"
+          },
+          "example_request": "https://yourdomain.com/v1/search/npm?name=axios&apikey=your_api_key"
+        },
+        {
+          "name": "TikTok Search",
+          "desc": "Search TikTok videos by keywords",
+          "path": "/v1/search/tiktok?q=music",
+          "method": "GET",
+          "status": "ready",
+          "params": { "q": "Search keywords (required)" }
+        },
+        {
+          "name": "PlayStore Search",
+          "desc": "Search applications in Google Play Store",
+          "path": "/v1/search/playstore?q=whatsapp",
+          "method": "GET",
+          "status": "ready",
+          "params": {
+            "q": "Search keywords (required)"
+          }
+        },
+        {
+          "name": "Song Lyrics Search",
+          "desc": "Search song lyrics by title or artist",
+          "path": "/v1/search/lirik?q=avenged sevenfold",
+          "method": "GET",
+          "status": "ready",
+          "params": {
+            "q": "Song title or artist name (required)"
+          }
+        },
+        {
+          "name": "HappyMod Search", 
+          "desc": "Search modded applications in HappyMod",
+          "path": "/v1/search/happymod?q=whatsapp",
+          "method": "GET",
+          "status": "ready",
+          "params": {
+            "q": "Application name (required)"
+          }
+        }
+      ]
+    },
+    {
       "name": "Image Processing",
       "items": [
         {
