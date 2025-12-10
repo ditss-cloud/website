@@ -390,7 +390,17 @@
           "params": {
             "q": "Application name (required)"
           }
-        }
+        },
+         {
+          "name": "Group WhatsApp Search", 
+          "desc": "search for WhatsApp groups",
+          "path": "/v1/search/group?q=jual beli fish it",
+          "method": "GET",
+          "status": "update",
+          "params": {
+            "q": "Application name (required)"
+          }
+         }
       ]
     },
     {
