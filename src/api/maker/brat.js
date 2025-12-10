@@ -8,6 +8,7 @@ export default (app) => {
       const urls = [
         `https://aqul-brat.hf.space/?text=${encodedText}`,
         `https://api-faa.my.id/faa/brathd?text=${encodedText}`,
+        `https://izukumii-brat.hf.space/api?text=${encodedText}`,
       ];
 
       const shuffledUrls = urls.sort(() => Math.random() - 0.5);
