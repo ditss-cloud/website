@@ -1,170 +1,126 @@
-import axios from "axios"
-import * as cheerio from "cheerio"
-import { createApiKeyMiddleware } from "../../middleware/apikey.js"
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import { createApiKeyMiddleware } from "../../middleware/apikey.js";
+import { getRandomUA } from "../../../src/utils/userAgen.js";
 
-export default (app) => {
-  async function fb(url) {
+async function facebook(url) {
+    if (!/facebook\.\w+\/(reel|watch|share)/gi.test(url)) {
+        throw new Error("Invalid URL, Enter A Valid Facebook Video URL");
+    }
+
     try {
-      const validUrl = /(?:https?:\/\/(web\.|www\.|m\.)?(facebook|fb)\.(com|watch)\S+)?$/
-      if (!validUrl.test(url)) {
-        throw new Error("Invalid URL provided")
-      }
+        const response = await axios.get("https://fdownloader.net/id", {
+            headers: {
+                "User-Agent": getRandomUA(),
+            },
+        });
 
-      const encodedUrl = encodeURIComponent(url)
-      const formData = `url=${encodedUrl}&lang=en&type=redirect`
+        const html = response.data;
+        const exMatch = html.match(/k_exp ?= ?"(\d+)"/i);
+        const toMatch = html.match(/k_token ?= ?"([a-f0-9]+)"/i);
+        const ex = exMatch ? exMatch[1] : null;
+        const to = toMatch ? toMatch[1] : null;
 
-      const response = await axios.post("https://getvidfb.com/", formData, {
-        headers: {
-          'authority': 'getvidfb.com',
-          'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-          'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-          'cache-control': 'max-age=0',
-          'content-type': 'application/x-www-form-urlencoded',
-          'origin': 'https://getvidfb.com',
-          'referer': 'https://getvidfb.com/',
-          'sec-ch-ua': '"Not A(Brand";v="8", "Chromium";v="132"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'document',
-          'sec-fetch-mode': 'navigate',
-          'sec-fetch-site': 'same-origin',
-          'sec-fetch-user': '?1',
-          'upgrade-insecure-requests': '1',
-          'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36'
-        },
-        timeout: 30000,
-      })
-
-      const $ = cheerio.load(response.data)
-      
-      const videoContainer = $('#snaptik-video')
-      if (!videoContainer.length) {
-        throw new Error("Video container not found")
-      }
-
-      const thumb = videoContainer.find('.snaptik-left img').attr('src')
-      const title = videoContainer.find('.snaptik-middle h3').text().trim()
-
-      const hasil = []
-
-      videoContainer.find('.abuttons a').each((_, el) => {
-        const link = $(el).attr('href')
-        const spanText = $(el).find('.span-icon span').last().text().trim()
-        
-        if (link && spanText && link.startsWith('http')) {
-          let resolution = 'Unknown'
-          let format = 'Unknown'
-          
-          if (spanText.includes('HD')) {
-            resolution = 'HD'
-            format = 'mp4'
-          } else if (spanText.includes('SD')) {
-            resolution = 'SD'
-            format = 'mp4'
-          } else if (spanText.includes('Mp3') || spanText.includes('Audio')) {
-            resolution = 'Audio'
-            format = 'mp3'
-          } else if (spanText.includes('Photo') || spanText.includes('Jpg')) {
-            resolution = 'Photo'
-            format = 'jpg'
-          }
-
-          hasil.push({
-            url: link,
-            resolution,
-            format,
-          })
+        if (!ex || !to) {
+            throw new Error("Error Extracting Exp And Token");
         }
-      })
 
-      if (hasil.length === 0) {
-        throw new Error("No download links found for the provided URL.")
-      }
+        const searchResponse = await axios.post(
+            "https://v3.fdownloader.net/api/ajaxSearch?lang=id",
+            new URLSearchParams({
+                k_exp: ex,
+                k_token: to,
+                q: url,
+                lang: "id",
+                web: "fdownloader.net",
+                v: "v2",
+                w: "",
+            }),
+            {
+                headers: {
+                    "User-Agent": getRandomUA(),
+                    origin: "https://fdownloader.net",
+                },
+            }
+        );
 
-      return {
-        thumbnail: thumb,
-        title: title || "Facebook Video",
-        data: hasil,
-      }
+        const data = searchResponse.data;
+        if (data.status !== "ok") {
+            throw new Error("Failed Doing Ajax Search");
+        }
 
-    } catch (err) {
-      throw new Error(err.message || "Failed to retrieve data from Facebook video")
-    }
-  }
+        const $ = cheerio.load(data.data);
+        const details = {
+            title: $(".thumbnail > .content > .clearfix > h3").text().trim(),
+            duration: $(".thumbnail > .content > .clearfix > p").text().trim(),
+            thumbnail: $(".thumbnail > .image-fb > img").attr("src") || "",
+            media: $("#popup_play > .popup-body > .popup-content > #vid").attr("src") || "",
+            video: $("#fbdownloader").find(".tab__content").eq(0).find("tr").map((i, el) => {
+                const quality = $(el).find(".video-quality").text().trim();
+                const url = $(el).find("a").attr("href") || $(el).find("button").attr("data-videourl") || null;
 
-  app.get("/downloader/facebook", createApiKeyMiddleware(), async (req, res) => {
-    try {
-      const { url } = req.query
-
-      if (!url) {
-        return res.status(400).json({
-          status: false,
-          error: "Parameter 'url' is required",
-        })
-      }
-
-      if (typeof url !== "string" || url.trim().length === 0) {
-        return res.status(400).json({
-          status: false,
-          error: "Parameter 'url' must be a non-empty string",
-        })
-      }
-
-      const result = await fb(url.trim())
-      if (!result) {
-        return res.status(500).json({
-          status: false,
-          error: "No result returned from API",
-        })
-      }
-      res.status(200).json({
-        status: true,
-        data: result,
-        timestamp: new Date().toISOString(),
-      })
+                return url && url !== "#note_convert" ? { quality, url } : null;
+            }).get().filter(Boolean),
+            music: $("#fbdownloader").find("#audioUrl").attr("value") || "",
+        };
+        return details;
     } catch (error) {
-      res.status(500).json({
-        status: false,
-        error: error.message || "Internal Server Error",
-      })
+        throw error;
     }
-  })
+}
 
-  app.post("/downloader/facebook", createApiKeyMiddleware(), async (req, res) => {
-    try {
-      const { url } = req.body
+export default function (app) {
+    app.get('/v1/download/facebook', createApiKeyMiddleware(), async (req, res) => {
+        const { url } = req.query;
+        
+        if (!url) {
+            return res.status(400).json({ 
+                status: false, 
+                message: 'URL is required',
+                error: 'Missing url parameter in query string' 
+            });
+        }
 
-      if (!url) {
-        return res.status(400).json({
-          status: false,
-          error: "Parameter 'url' is required",
-        })
-      }
+        try {
+            const results = await facebook(url);
+            res.status(200).json({
+                status: true,
+                message: 'Facebook video processed successfully',
+                result: results
+            });
+        } catch (error) {
+            res.status(500).json({ 
+                status: false, 
+                message: 'Failed to process Facebook video',
+                error: error.message 
+            });
+        }
+    });
 
-      if (typeof url !== "string" || url.trim().length === 0) {
-        return res.status(400).json({
-          status: false,
-          error: "Parameter 'url' must be a non-empty string",
-        })
-      }
+    app.post('/v1/download/facebook', createApiKeyMiddleware(), async (req, res) => {
+        const { url } = req.body;
+        
+        if (!url) {
+            return res.status(400).json({ 
+                status: false, 
+                message: 'URL is required',
+                error: 'Missing url field in request body' 
+            });
+        }
 
-      const result = await fb(url.trim())
-      if (!result) {
-        return res.status(500).json({
-          status: false,
-          error: "No result returned from API",
-        })
-      }
-      res.status(200).json({
-        status: true,
-        data: result,
-        timestamp: new Date().toISOString(),
-      })
-    } catch (error) {
-      res.status(500).json({
-        status: false,
-        error: error.message || "Internal Server Error",
-      })
-    }
-  })
-  }
+        try {
+            const results = await facebook(url);
+            res.status(200).json({
+                status: true,
+                message: 'Facebook video processed successfully',
+                result: results
+            });
+        } catch (error) {
+            res.status(500).json({ 
+                status: false, 
+                message: 'Failed to process Facebook video',
+                error: error.message 
+            });
+        }
+    });
+}
