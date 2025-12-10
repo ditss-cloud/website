@@ -214,6 +214,123 @@
       ]
     },
     {
+      "name": "GAMES",
+      "items": [
+        {
+          "name": "Brain Teaser",
+          "desc": "Logic puzzle and brain exercise game",
+          "path": "/v1/game/asahotak",
+          "method": "GET",
+          "status": "ready"
+        },
+        {
+          "name": "Cak Lontong Riddles",
+          "desc": "Indonesian-style comedy riddles game",
+          "path": "/v1/game/caklontong",
+          "method": "GET",
+          "status": "ready"
+        },
+        {
+      "name": "Family 100 Quiz",
+      "desc": "Multiple answer family quiz game",
+      "path": "/v1/game/family100",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Who Am I?",
+      "desc": "Character guessing and identification game",
+      "path": "/v1/game/siapakahaku",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Word Scramble",
+      "desc": "Word arrangement and scramble puzzle game",
+      "path": "/v1/game/susunkata",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Flag Guessing",
+      "desc": "Country flag recognition and guessing game",
+      "path": "/v1/game/tebakbendera",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Anime Character Quiz",
+      "desc": "Anime character identification game",
+      "path": "/v1/game/tebakanime",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Picture Guessing",
+      "desc": "Image-based guessing game",
+      "path": "/v1/game/tebakgambar",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Game Title Quiz",
+      "desc": "Video game title guessing game",
+      "path": "/v1/game/tebakgame",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Sentence Guessing",
+      "desc": "Complete the sentence puzzle game",
+      "path": "/v1/game/tebakkalimat",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Word Guessing",
+      "desc": "Vocabulary and word guessing game",
+      "path": "/v1/game/tebakkata",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Chemistry Element Quiz",
+      "desc": "Chemical element symbol guessing game",
+      "path": "/v1/game/tebakkimia",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Song Title Quiz",
+      "desc": "Music song title guessing game",
+      "path": "/v1/game/tebaklagu",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Lyric Guessing",
+      "desc": "Song lyric completion game",
+      "path": "/v1/game/tebaklirik",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "Fun Riddles",
+      "desc": "Entertaining and humorous riddle game",
+      "path": "/v1/game/tebaktebakan",
+      "method": "GET",
+      "status": "ready"
+    },
+    {
+      "name": "General Puzzles",
+      "desc": "Various types of puzzle games",
+      "path": "/v1/game/tekateki",
+      "method": "GET",
+      "status": "ready"
+    }
+  ]
+},
+    {
       "name": "Image Processing",
       "items": [
         {
