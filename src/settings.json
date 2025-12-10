@@ -47,7 +47,7 @@
         {
           "name": "AI Image Editor",
           "desc": "Edit or transform images using AI with custom prompts (change style, objects, clothing, colors, etc.)",
-          "path": "/v1/ai/imgeditor?url=https://cdn.ditss.biz.id/3Bcv.jpg&prompt=change%20to%20formal%20suit",
+          "path": "/v1/ai/imgeditor?url=https%3A%2F%2Fcdn.ditss.biz.id%2F3Bcv.jpg&prompt=Using+the+model%2C+create+a+1%2F7+scale+commercialized+figurine+based+on+the+character%28s%29+shown+in+the+image%2C+rendered+in+a+realistic+style+within+a+real-life+environment.+The+figurine+is+displayed+on+a+computer+desk+and+stands+on+a+round%2C+fully+transparent+acrylic+base+with+no+text+or+markings.+On+the+computer+monitor%2C+show+the+3D+modeling+process+of+this+figurine%2C+including+visible+modeling+tools%2C+wireframes%2C+and+interface+elements.+Next+to+the+monitor%2C+place+a+BANDAI-style+toy+packaging+box+printed+with+the+original+character+artwork.+The+packaging+should+feature+high-quality%2C+two-dimensional+flat+illustrations+in+authentic+commercial+packaging+style.",
           "status": "active",
           "params": {
             "url": "URL of the image to be edited (required)",
