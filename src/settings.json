@@ -396,7 +396,7 @@
           "desc": "search for WhatsApp groups",
           "path": "/v1/search/group?q=jual beli fish it",
           "method": "GET",
-          "status": "update",
+          "status": "ready",
           "params": {
             "q": "Application name (required)"
           }
