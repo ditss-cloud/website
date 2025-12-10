@@ -1,7 +1,7 @@
 import yt from "yt-search";
 import { createApiKeyMiddleware } from "../../middleware/apikey.js";
 
-async function searchYouTube(query) {
+async function searchYouTube(query, limit = 50) {
   try {
     if (!query || query.trim().length === 0) {
       throw new Error("Search query cannot be empty");
@@ -17,7 +17,12 @@ async function searchYouTube(query) {
       throw new Error("No results found");
     }
 
-    return results.all.slice(0, 200).map(item => ({
+    // Validasi dan batasi limit
+    let finalLimit = parseInt(limit);
+    if (isNaN(finalLimit) || finalLimit < 1) finalLimit = 50;
+    if (finalLimit > 100) finalLimit = 100;
+
+    return results.all.slice(0, finalLimit).map(item => ({
       id: item.videoId,
       title: item.title,
       description: item.description || "",
@@ -85,7 +90,7 @@ async function getVideoInfo(url) {
 
 export default (app) => {
   app.get("/v1/search/youtube", createApiKeyMiddleware(), async (req, res) => {
-    const { q, limit = 20 } = req.query;
+    const { q, limit = 50, all = false } = req.query;
     
     if (!q) {
       return res.status(400).json({
@@ -97,7 +102,18 @@ export default (app) => {
 
     try {
       const results = await searchYouTube(q);
-      const limitedResults = results.slice(0, parseInt(limit));
+      
+      let finalResults;
+      let totalAvailable = results.length;
+      
+      // Jika all=true, kembalikan semua hasil (maksimal 100)
+      if (all === 'true' || all === true) {
+        finalResults = results;
+      } else {
+        // Gunakan limit dari parameter
+        const finalLimit = parseInt(limit);
+        finalResults = results.slice(0, isNaN(finalLimit) ? 50 : Math.min(finalLimit, 100));
+      }
       
       res.status(200).json({
         status: true,
@@ -105,8 +121,10 @@ export default (app) => {
         mode: "search",
         message: "YouTube search completed successfully",
         query: q,
-        count: limitedResults.length,
-        results: limitedResults
+        count: finalResults.length,
+        total_available: totalAvailable,
+        limit_applied: all === 'true' || all === true ? "all (max 100)" : finalResults.length,
+        results: finalResults
       });
     } catch (error) {
       console.error("[YouTube Search Error]:", error.message);
@@ -119,7 +137,7 @@ export default (app) => {
   });
 
   app.post("/v1/search/youtube", createApiKeyMiddleware(), async (req, res) => {
-    const { q, limit = 20 } = req.body;
+    const { q, limit = 50, all = false } = req.body;
     
     if (!q) {
       return res.status(400).json({
@@ -131,7 +149,18 @@ export default (app) => {
 
     try {
       const results = await searchYouTube(q);
-      const limitedResults = results.slice(0, parseInt(limit));
+      
+      let finalResults;
+      let totalAvailable = results.length;
+      
+      // Jika all=true, kembalikan semua hasil
+      if (all === 'true' || all === true) {
+        finalResults = results;
+      } else {
+        // Gunakan limit dari parameter
+        const finalLimit = parseInt(limit);
+        finalResults = results.slice(0, isNaN(finalLimit) ? 50 : Math.min(finalLimit, 100));
+      }
       
       res.status(200).json({
         status: true,
@@ -139,8 +168,10 @@ export default (app) => {
         mode: "search",
         message: "YouTube search completed successfully",
         query: q,
-        count: limitedResults.length,
-        results: limitedResults
+        count: finalResults.length,
+        total_available: totalAvailable,
+        limit_applied: all === 'true' || all === true ? "all (max 100)" : finalResults.length,
+        results: finalResults
       });
     } catch (error) {
       console.error("[YouTube Search Error]:", error.message);
@@ -221,6 +252,11 @@ export default (app) => {
       services: {
         search: "active",
         video_info: "active"
+      },
+      features: {
+        search_limit: "50 results default (max 100)",
+        all_results_option: "Use ?all=true to get all available results",
+        pagination: "Manual via limit parameter"
       },
       supported_methods: ["GET", "POST"],
       timestamp: new Date().toISOString()
