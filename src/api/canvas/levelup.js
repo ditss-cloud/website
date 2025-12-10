@@ -1,12 +1,8 @@
-import { createCanvas, loadImage, registerFont } from 'canvas';
+import { createCanvas, loadImage } from 'canvas';
 import axios from 'axios';
 import { createApiKeyMiddleware } from "../../middleware/apikey.js";
 
-// Register font jika perlu (opsional)
-// registerFont('path/to/font.ttf', { family: 'FontName' });
-
 async function createLevelUpImage(username, level, xp, avatarUrl) {
-  // Ukuran canvas
   const canvas = createCanvas(800, 300);
   const ctx = canvas.getContext('2d');
   
@@ -22,18 +18,35 @@ async function createLevelUpImage(username, level, xp, avatarUrl) {
   ctx.lineWidth = 5;
   ctx.strokeRect(10, 10, 780, 280);
   
-  // Download avatar
+  // Avatar - handle WhatsApp URL khusus
   let avatarImg;
   try {
-    const response = await axios.get(avatarUrl, { responseType: 'arraybuffer' });
-    const avatarBuffer = Buffer.from(response.data);
-    avatarImg = await loadImage(avatarBuffer);
-  } catch {
-    // Fallback avatar
-    avatarImg = await loadImage('https://cdn.ditss.biz.id/default-avatar.png');
+    // WhatsApp URL sering butuh User-Agent khusus
+    const response = await axios.get(avatarUrl, { 
+      responseType: 'arraybuffer',
+      timeout: 15000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
+    
+    // Validasi bahwa response adalah gambar
+    const buffer = Buffer.from(response.data);
+    if (buffer.length === 0) {
+      throw new Error('Empty image response');
+    }
+    
+    avatarImg = await loadImage(buffer);
+    
+  } catch (error) {
+    console.log('Avatar load failed, using fallback:', error.message);
+    // Fallback ke avatar generator
+    const fallbackUrl = `https://api.dicebear.com/7.x/avataaars/png?seed=${encodeURIComponent(username)}&size=160`;
+    const fallbackResponse = await axios.get(fallbackUrl, { responseType: 'arraybuffer' });
+    avatarImg = await loadImage(Buffer.from(fallbackResponse.data));
   }
   
-  // Avatar circle
+  // Draw avatar circle
   ctx.save();
   ctx.beginPath();
   ctx.arc(150, 150, 80, 0, Math.PI * 2);
@@ -49,42 +62,37 @@ async function createLevelUpImage(username, level, xp, avatarUrl) {
   ctx.lineWidth = 8;
   ctx.stroke();
   
-  // Username
+  // Text
   ctx.font = 'bold 36px Arial';
   ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'left';
   ctx.fillText(username, 260, 120);
   
-  // Level text
   ctx.font = '28px Arial';
   ctx.fillStyle = '#fbbf24';
   ctx.fillText(`Level: ${level}`, 260, 170);
   
-  // XP text
   ctx.fillStyle = '#a7f3d0';
   ctx.fillText(`XP: ${xp}`, 260, 210);
   
-  // XP Progress bar background
+  // Progress bar
+  const progress = Math.min(100, (xp % 100) || 50);
+  const progressWidth = (500 * progress) / 100;
+  
   ctx.fillStyle = '#374151';
   ctx.fillRect(260, 240, 500, 25);
   
-  // XP Progress bar fill (contoh: 70% progress)
-  const progress = xp % 100; // Misal XP untuk next level
-  const progressWidth = (500 * progress) / 100;
   ctx.fillStyle = '#10b981';
   ctx.fillRect(260, 240, progressWidth, 25);
   
-  // Progress bar border
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 2;
   ctx.strokeRect(260, 240, 500, 25);
   
-  // Progress text
   ctx.font = 'bold 20px Arial';
   ctx.fillStyle = '#ffffff';
   ctx.fillText(`${progress}%`, 720, 258);
   
-  // Celebration text
+  // Title
   ctx.font = 'bold 40px Arial';
   ctx.fillStyle = '#fef3c7';
   ctx.textAlign = 'center';
@@ -96,19 +104,25 @@ async function createLevelUpImage(username, level, xp, avatarUrl) {
 async function handleRequest(req, res) {
   try {
     const data = req.method === 'GET' ? req.query : req.body;
-    const { username, level, xp, avatar } = data;
     
-    if (!username || !level || !xp || !avatar) {
-      return res.json({
+    // Debug log
+    console.log('Received data:', data);
+    
+    if (!data.username || !data.level || !data.xp) {
+      return res.status(400).json({
         status: false,
-        error: "Parameters 'username', 'level', 'xp', and 'avatar' are required"
+        error: "Parameter required: username, level, xp"
       });
     }
     
-    const levelInt = parseInt(level);
-    const xpInt = parseInt(xp);
+    const username = String(data.username);
+    const level = parseInt(data.level) || 1;
+    const xp = parseInt(data.xp) || 0;
+    const avatar = data.avatar || `https://api.dicebear.com/7.x/avataaars/png?seed=${encodeURIComponent(username)}`;
     
-    const imageBuffer = await createLevelUpImage(username, levelInt, xpInt, avatar);
+    console.log('Processing:', { username, level, xp, avatar });
+    
+    const imageBuffer = await createLevelUpImage(username, level, xp, avatar);
     
     res.set({
       'Content-Type': 'image/png',
@@ -120,9 +134,10 @@ async function handleRequest(req, res) {
     
   } catch (error) {
     console.error("Level Up Error:", error);
-    res.json({
+    res.status(500).json({
       status: false,
-      error: error.message
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 }
