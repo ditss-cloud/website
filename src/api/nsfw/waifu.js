@@ -22,18 +22,6 @@ const NSFW_CATEGORIES = {
   neko: ["neko"],
   trap: ["trap"],
   blowjob: ["blowjob"],
-  oral: ["oral"],
-  hentai: ["hentai"],
-  milf: ["milf"],
-  ero: ["ero"],
-  oppai: ["oppai"],
-  paizuri: ["paizuri"],
-  midriff: ["midriff"],
-  cum: ["cum"],
-  ass: ["ass"],
-  selfies: ["selfies"],
-  uniform: ["uniform"],
-  thighs: ["thighs"],
 };
 
 // --- Ambil gambar NSFW ---
