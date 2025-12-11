@@ -61,8 +61,8 @@ export default (app) => {
     }
 
     // GET & POST konsisten
-    app.get(`/api/nsfw/${category}`, createApiKeyMiddleware(), handleNsfw);
-    app.post(`/api/nsfw/${category}`, createApiKeyMiddleware(), handleNsfw);
+    app.get(`/v2/nsfw/${category}`, createApiKeyMiddleware(), handleNsfw);
+    app.post(`/v2/nsfw/${category}`, createApiKeyMiddleware(), handleNsfw);
 
   });
 };
