@@ -1,9 +1,10 @@
+// ['grok-4-fast-reasoning', 'grok-4-fast-non-reasoning'
 import axios from 'axios';
 import { createApiKeyMiddleware } from "../../middleware/apikey.js";
 
 async function fetchIshChatResponse(question, model = 'gpt-oss-120b') {
     try {
-        const models = ['grok-4-fast-reasoning', 'grok-4-fast-non-reasoning', 'gpt-oss-120b', 'grok-3-mini'];
+        const models = ['gpt-4o-mini', 'o3-mini', 'o4-mini', 'grok-3-mini', 'gpt-5-mini', 'gpt-5-nano', 'gpt-oss-120b', 'gpt-5', 'grok-4-fast-reasoning', 'grok-4-fast-non-reasoning'];
         
         if (!question) throw new Error('Question is required.');
         if (!models.includes(model)) throw new Error(`Available models: ${models.join(', ')}.`);
